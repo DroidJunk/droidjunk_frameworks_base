@@ -29,6 +29,8 @@
     android:layout_marginLeft="@dimen/notification_panel_margin_left"
     >
 
+
+    
     <TextView
         android:id="@+id/carrier_label"
         android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network"
@@ -50,6 +52,12 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/notification_panel_header_height"
             />
+        
+        <include layout="@layout/junk_toggles_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/notification_panel_header_height"
+            />        
      
         <ScrollView
             android:id="@+id/scroll"
@@ -57,7 +65,7 @@
             android:layout_height="match_parent"
             android:fadingEdge="none"
             android:overScrollMode="ifContentScrolls"
-            android:layout_marginTop="@dimen/notification_panel_header_height"
+            android:layout_marginTop="@dimen/notification_panel_and_toggle_height"
             >
             <com.android.systemui.statusbar.policy.NotificationRowLayout
                 android:id="@+id/latestItems"
@@ -68,6 +76,12 @@
         </ScrollView>
     </FrameLayout>
 
+    <include layout="@layout/junk_toggles_bottom"
+    	android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/close_handle_height"
+        />            
+    
     <com.android.systemui.statusbar.phone.CloseDragHandle android:id="@+id/close"
         android:layout_width="match_parent"
         android:layout_height="@dimen/close_handle_height"

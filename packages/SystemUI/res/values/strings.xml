@@ -385,4 +385,24 @@
 
     <!-- Description of the button in the phone-style notification panel that controls auto-rotation, when auto-rotation is off. [CHAR LIMIT=NONE] -->
     <string name="accessibility_rotation_lock_on_portrait">Screen is locked in portrait orientation.</string>
+    
+    
+    <!-- ===============================================================
+     	JUNK
+     =============================================================== -->    
+     
+    <string name="but">Torch</string>
+    <string name="but0">4G/3G</string>
+    <string name="but1">Wifi</string>
+    <string name="but2">Gps</string>
+    <string name="but3">Bluetooth</string>
+    <string name="butnfc">NFC</string>
+    <string name="but4">Sound</string>
+    <string name="but5">Airplane</string>
+    <string name="but6">Brightness</string>
+    <string name="but7">Rotate</string>
+    <string name="but8">Sync</string>
+    <string name="but9">Data</string>
+     
+    
 </resources>

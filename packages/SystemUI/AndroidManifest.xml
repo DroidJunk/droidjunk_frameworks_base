@@ -8,7 +8,16 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-permission android:name="android.permission.INJECT_EVENTS" />
+
+    <!-- Junk -->    
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- End Junk --> 
+    
 
     <uses-permission android:name="android.permission.STATUS_BAR_SERVICE" />
     <uses-permission android:name="android.permission.STATUS_BAR" />
@@ -177,5 +186,29 @@
 <!--            <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
+
+        
+    <!-- Junk -->    
+        
+        <service android:name=".TorchService" >
+            android:exported="true"
+            android:enabled="true"
+             <intent-filter>
+                 <action android:name="com.android.systemui.INTENT_TORCH_ON"/>
+                 <action android:name="com.android.systemui.INTENT_TORCH_OFF"/>
+                 <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+          </service>
+        
+         <activity
+            android:name="com.android.systemui.Torch"
+            android:theme="@android:style/Theme.Holo.Panel"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop" >
+        </activity>
+        
+    <!-- End Junk -->         
+        
+        
     </application>
 </manifest>
