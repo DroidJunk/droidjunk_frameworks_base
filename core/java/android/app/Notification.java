@@ -20,6 +20,8 @@ import com.android.internal.R;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -57,6 +59,11 @@ import java.util.ArrayList;
  */
 public class Notification implements Parcelable
 {
+	
+	private final String PD_NOTIF_ICON_BG_COLOR = "pd_notif_icon_bg_color";
+	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
+
+	
     /**
      * Use all default values (where applicable).
      */
@@ -799,11 +806,24 @@ public class Notification implements Parcelable
     @Deprecated
     public void setLatestEventInfo(Context context,
             CharSequence contentTitle, CharSequence contentText, PendingIntent contentIntent) {
-        // TODO: rewrite this to use Builder
+    	// TODO: rewrite this to use Builder
+
+        Context settingsContext = context;
+		try {
+			settingsContext = context.createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
+        SharedPreferences sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+    	
+        
         RemoteViews contentView = new RemoteViews(context.getPackageName(),
                 R.layout.notification_template_base);
         if (this.icon != 0) {
             contentView.setImageViewResource(R.id.icon, this.icon);
+        	contentView.setDrawableColorMatrix(R.id.icon, true,   // icon bg
+        			sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff1a4554));
         }
         if (priority < PRIORITY_LOW) {
             contentView.setInt(R.id.icon,
@@ -813,13 +833,16 @@ public class Notification implements Parcelable
         }
         if (contentTitle != null) {
             contentView.setTextViewText(R.id.title, contentTitle);
+            contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
         }
         if (contentText != null) {
             contentView.setTextViewText(R.id.text, contentText);
+            contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
         }
         if (this.when != 0) {
             contentView.setViewVisibility(R.id.time, View.VISIBLE);
             contentView.setLong(R.id.time, "setTime", when);
+            contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
         }
         if (this.number != 0) {
             NumberFormat f = NumberFormat.getIntegerInstance();
@@ -914,6 +937,9 @@ public class Notification implements Parcelable
         private static final int MAX_ACTION_BUTTONS = 3;
 
         private Context mContext;
+        
+    	private final String PD_NOTIF_ICON_BG_COLOR = "pd_notif_icon_bg_color";
+    	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
 
         private long mWhen;
         private int mSmallIcon;
@@ -1387,6 +1413,16 @@ public class Notification implements Parcelable
             boolean showLine3 = false;
             boolean showLine2 = false;
             int smallIconImageViewId = R.id.icon;
+            
+            Context settingsContext = mContext;
+     		try {
+     			settingsContext = mContext.createPackageContext("com.android.settings",0);
+     		} catch (NameNotFoundException e) {
+     			e.printStackTrace();
+     		}
+
+             SharedPreferences sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+            
             if (mLargeIcon != null) {
                 contentView.setImageViewBitmap(R.id.icon, mLargeIcon);
                 smallIconImageViewId = R.id.right_icon;
@@ -1400,14 +1436,18 @@ public class Notification implements Parcelable
             if (mSmallIcon != 0) {
                 contentView.setImageViewResource(smallIconImageViewId, mSmallIcon);
                 contentView.setViewVisibility(smallIconImageViewId, View.VISIBLE);
+                contentView.setDrawableColorMatrix(R.id.icon, true,   // icon bg		
+                		sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff1a4554));
             } else {
                 contentView.setViewVisibility(smallIconImageViewId, View.GONE);
             }
             if (mContentTitle != null) {
                 contentView.setTextViewText(R.id.title, mContentTitle);
+                contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
             }
             if (mContentText != null) {
                 contentView.setTextViewText(R.id.text, mContentText);
+                contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
                 showLine3 = true;
             }
             if (mContentInfo != null) {
@@ -1472,6 +1512,7 @@ public class Notification implements Parcelable
                 } else {
                     contentView.setViewVisibility(R.id.time, View.VISIBLE);
                     contentView.setLong(R.id.time, "setTime", mWhen);
+                    contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
                 }
             }
             contentView.setViewVisibility(R.id.line3, showLine3 ? View.VISIBLE : View.GONE);
@@ -1565,7 +1606,8 @@ public class Notification implements Parcelable
             n.defaults = mDefaults;
             n.flags = mFlags;
             n.bigContentView = makeBigContentView();
-            if (mLedOnMs != 0 && mLedOffMs != 0) {
+            // Junk if (mLedOnMs != 0 && mLedOffMs != 0) { <<<< Can't make solid led without off = 0
+            if (mLedOnMs != 0) {
                 n.flags |= FLAG_SHOW_LIGHTS;
             }
             if ((mDefaults & DEFAULT_LIGHTS) != 0) {

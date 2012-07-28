@@ -53,6 +53,8 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import droidjunk.colorfitermaker.ColorFilterMaker;
+
 
 /**
  * A class that describes a view hierarchy that can be displayed in
@@ -634,6 +636,70 @@ public class RemoteViews implements Parcelable, Filter {
 
         public final static int TAG = 3;
     }
+    
+    
+    /**
+     * Equivalent to calling a combination of {@link Drawable#setAlpha(int)},
+     * {@link Drawable#setColorFilter(int, android.graphics.PorterDuff.Mode)},
+     * and/or {@link Drawable#setLevel(int)} on the {@link Drawable} of a given view.
+     * <p>
+     * These operations will be performed on the {@link Drawable} returned by the
+     * target {@link View#getBackground()} by default.  If targetBackground is false,
+     * we assume the target is an {@link ImageView} and try applying the operations
+     * to {@link ImageView#getDrawable()}.
+     * <p>
+     * You can omit specific calls by marking their values with null or -1.
+     */
+    private class SetDrawableColorMatrix extends Action {
+        public SetDrawableColorMatrix(int id, boolean targetBackground,
+                int colormatrix) {
+            this.viewId = id;
+            this.targetBackground = targetBackground;
+            this.colorMatrix = colormatrix;
+        }
+        
+        public SetDrawableColorMatrix(Parcel parcel) {
+            viewId = parcel.readInt();
+            targetBackground = parcel.readInt() != 0;
+            colorMatrix = parcel.readInt();
+        }
+        
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(TAG);
+            dest.writeInt(viewId);
+            dest.writeInt(targetBackground ? 1 : 0);
+            dest.writeInt(colorMatrix);
+        }
+        
+        @Override
+        public void apply(View root, ViewGroup rootParent, OnClickHandler handler) {
+            final View target = root.findViewById(viewId);
+            if (target == null) return;
+            
+            // Pick the correct drawable to modify for this view
+            Drawable targetDrawable = null;
+            if (targetBackground) {
+                targetDrawable = target.getBackground();
+            } else if (target instanceof ImageView) {
+                ImageView imageView = (ImageView) target;
+                targetDrawable = imageView.getDrawable();
+            }
+            
+            if (targetDrawable != null) {
+                // Perform modifications only if values are set correctly
+                targetDrawable.setColorFilter(ColorFilterMaker.changeColorAlpha(colorMatrix, .45f, .0f));
+            }
+        }
+
+        int viewId;
+        boolean targetBackground;
+        int alpha;
+        int colorMatrix;
+
+
+        public final static int TAG = 15;
+    }       
+    
     
     private class ReflectionActionWithoutParams extends Action {
         int viewId;
@@ -1399,6 +1465,9 @@ public class RemoteViews implements Parcelable, Filter {
                     case SetDrawableParameters.TAG:
                         mActions.add(new SetDrawableParameters(parcel));
                         break;
+                    case SetDrawableColorMatrix.TAG:
+                        mActions.add(new SetDrawableColorMatrix(parcel));
+                        break;                        
                     case ReflectionAction.TAG:
                         mActions.add(new ReflectionAction(parcel));
                         break;
@@ -1844,6 +1913,34 @@ public class RemoteViews implements Parcelable, Filter {
                 colorFilter, mode, level));
     }
 
+    
+    /**
+     * @hide
+     * Equivalent to calling a combination of {@link Drawable#setAlpha(int)},
+     * {@link Drawable#setColorFilter(int, android.graphics.PorterDuff.Mode)},
+     * and/or {@link Drawable#setLevel(int)} on the {@link Drawable} of a given
+     * view.
+     * <p>
+     * You can omit specific calls by marking their values with null or -1.
+     * 
+     * @param viewId The id of the view that contains the target
+     *            {@link Drawable}
+     * @param targetBackground If true, apply these parameters to the
+     *            {@link Drawable} returned by
+     *            {@link android.view.View#getBackground()}. Otherwise, assume
+     *            the target view is an {@link ImageView} and apply them to
+     *            {@link ImageView#getDrawable()}.
+     * @param colorMatrix Specify a color for a
+     *            {@link android.graphics.ColorFilter} for this drawable, or -1
+     *            to leave unchanged.
+     */
+    public void setDrawableColorMatrix(int viewId, boolean targetBackground,
+            int colorMatrix) {
+        addAction(new SetDrawableColorMatrix(viewId, targetBackground,
+                colorMatrix));
+    }    
+    
+    
     /**
      * Equivalent to calling {@link android.widget.TextView#setTextColor(int)}.
      * 
