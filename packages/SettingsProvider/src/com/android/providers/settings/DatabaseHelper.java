@@ -63,7 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // database gets upgraded properly. At a minimum, please confirm that 'upgradeVersion'
     // is properly propagated through your change.  Not doing so will result in a loss of user
     // settings.
-    private static final int DATABASE_VERSION = 79;
+    private static final int DATABASE_VERSION = 80;
 
     private Context mContext;
 
@@ -130,6 +130,64 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE INDEX bookmarksIndex1 ON bookmarks (folder);");
         db.execSQL("CREATE INDEX bookmarksIndex2 ON bookmarks (shortcut);");
+        
+        db.execSQL("CREATE TABLE quiet_time (" +
+                "_id INTEGER PRIMARY KEY," +
+                "qtEnabled INTEGER, " +
+                "qtStartHour INTEGER, " +
+                "qtStartMin INTEGER, " +
+                "qtStopHour INTEGER, " +
+                "qtStopMin INTEGER, " +
+                "qtLedOn INTEGER, " +
+                "qtSoundOn INTEGER, " +
+                "qtVibrateOn INTEGER, " +
+                "qtMode INTEGER, " +
+                "qtAllow INTEGER, " +
+                "qtExtra1 INTEGER, " +
+                "qtExtra2 INTEGER);");
+
+        // insert default values
+        String insertQT = "INSERT INTO quiet_time " +
+             "(qtEnabled, qtStartHour, qtStartMin, qtStopHour, qtStopMin, qtLedOn, " +
+             " qtSoundOn, qtVibrateOn, qtMode, qtAllow, qtExtra1, qtExtra2) VALUES ";
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // default
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // sun
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // mon
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // tue
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // wed
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // thur
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // fri
+        db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1, 0, 0, 0, 0);"); // sat
+        
+
+        db.execSQL("CREATE TABLE notif_options (" +
+                "_id INTEGER PRIMARY KEY," +
+                "Name TEXT, " +
+                "pkgName TEXT, " +
+                "ledColor INTEGER, " +
+                "ledOnMs INTEGER, " +
+        		"ledOffMs INTEGER);");
+         
+        // insert default values
+        String insertNotifOp0 = "INSERT INTO notif_options " +
+             "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+        db.execSQL(insertNotifOp0 + "('Default','', -1, 3, 3);");        
+        
+        // insert default values
+        String insertNotifOp1 = "INSERT INTO notif_options " +
+             "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+        db.execSQL(insertNotifOp1 + "('Incoming','', -1, 3, 3);");    
+        
+        // insert default values
+        String insertNotifOp2 = "INSERT INTO notif_options " +
+             "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+        db.execSQL(insertNotifOp2 + "('Missed','', -1, 3, 3);");    
+        
+        // insert default values
+        String insertNotifOp3 = "INSERT INTO notif_options " +
+             "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+        db.execSQL(insertNotifOp3 + "('VoiceMail','', -1, 3, 3);");    
+        
 
         // Populate bookmarks table with initial bookmarks
         loadBookmarks(db);
@@ -1070,6 +1128,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             upgradeVersion = 79;
         }
+        
+        
+        if (upgradeVersion == 79) {
+            // add quiet_time table
+            db.execSQL("CREATE TABLE quiet_time (" +
+                    "_id INTEGER PRIMARY KEY," +
+                    "qtEnabled INTEGER, " +
+                    "qtStartHour INTEGER, " +
+                    "qtStartMin INTEGER, " +
+                    "qtStopHour INTEGER, " +
+                    "qtStopMin INTEGER, " +
+                    "qtLedOn INTEGER, " +
+                    "qtSoundOn INTEGER, " +
+                    "qtVibrateOn INTEGER);");
+
+            // insert default values
+            String insertQT = "INSERT INTO quiet_time " +
+                 "(qtEnabled, qtStartHour, qtStartMin, qtStopHour, qtStopMin, qtLedOn, " +
+                 " qtSoundOn, qtVibrateOn) VALUES ";
+            db.execSQL(insertQT + "(0, 21, 0, 7, 0, 1, 1, 1);");   
+            
+            db.execSQL("CREATE TABLE notif_options (" +
+                    "_id INTEGER PRIMARY KEY," +
+                    "Name TEXT, " +
+                    "pkgName TEXT, " +
+                    "ledColor INTEGER, " +
+                    "ledOnMs INTEGER, " +
+            		"ledOffMs INTEGER);");
+             
+            // insert default values
+            String insertNotifOp = "INSERT INTO notif_options " +
+                 "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+            db.execSQL(insertNotifOp + "('Default','', -1, 3, 3);");     
+ 
+            //  Add new values to existing table
+            // insert default values
+            String insertNotifOp1 = "INSERT INTO notif_options " +
+                 "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+            db.execSQL(insertNotifOp1 + "('Incoming','', -1, 3, 3);");    
+            
+            // insert default values
+            String insertNotifOp2 = "INSERT INTO notif_options " +
+                 "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+            db.execSQL(insertNotifOp2 + "('Missed','', -1, 3, 3);");    
+            
+            // insert default values
+            String insertNotifOp3 = "INSERT INTO notif_options " +
+                 "(Name, pkgName, ledColor, ledOnMs, ledOffMs) VALUES ";
+            db.execSQL(insertNotifOp3 + "('VoiceMail','', -1, 3, 3);");    
+            
+            
+            upgradeVersion = 80;
+        } 
+        
 
         // *** Remember to update DATABASE_VERSION above!
 
