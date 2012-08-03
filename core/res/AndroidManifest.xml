@@ -1762,6 +1762,14 @@
             android:permission="android.permission.MASTER_CLEAR"
             android:exported="true" />
 
+	<!-- ===============================================================
+     	JUNK
+     =============================================================== -->          
+        
+        <service android:name="com.android.server.JunkQuietTimeService"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:exported="true" />
+
     </application>
 
 </manifest>

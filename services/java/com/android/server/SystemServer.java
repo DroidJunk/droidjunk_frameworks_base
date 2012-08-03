@@ -140,7 +140,10 @@ class ServerThread extends Thread {
         NetworkTimeUpdateService networkTimeUpdater = null;
         CommonTimeManagementService commonTimeMgmtService = null;
         InputManagerService inputManager = null;
-
+        // Junk
+        JunkQuietTimeService junkQuietTimeService = null;
+        // End Junk
+        
         // Critical services...
         try {
             Slog.i(TAG, "Entropy Mixer");
@@ -642,6 +645,15 @@ class ServerThread extends Thread {
                 reportWtf("starting CertBlacklister", e);
             }
             
+            // Junk
+            try {
+                Slog.i(TAG, "JunkQuietTimeService");
+                junkQuietTimeService = new JunkQuietTimeService(context);
+            } catch (Throwable e) {
+                reportWtf("starting JunkQuietTimeService service", e);
+            }
+            // End Junk
+            
             if (context.getResources().getBoolean(
                     com.android.internal.R.bool.config_enableDreams)) {
                 try {
@@ -748,7 +760,10 @@ class ServerThread extends Thread {
         final DreamManagerService dreamyF = dreamy;
         final InputManagerService inputManagerF = inputManager;
         final BluetoothService bluetoothF = bluetooth;
-
+        // Junk
+        final JunkQuietTimeService junkQuietTimeServiceF = junkQuietTimeService;
+        // End Junk
+        
         // We now tell the activity manager it is okay to run third party
         // code.  It will call back into us once it has gotten to the state
         // where third party code can really run (but before it has actually
@@ -804,6 +819,14 @@ class ServerThread extends Thread {
                 } catch (Throwable e) {
                     reportWtf("making Recognition Service ready", e);
                 }
+                // Junk
+                try {
+                    if (junkQuietTimeServiceF != null) junkQuietTimeServiceF.systemReady();
+                } catch (Throwable e) {
+                    reportWtf("making Quiet Time Service ready", e);
+                }
+                // End Junk
+
                 Watchdog.getInstance().start();
 
                 // It is now okay to let the various system services start their

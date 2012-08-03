@@ -157,6 +157,24 @@ public class NotificationManagerService extends INotificationManager.Stub
     private static final String TAG_PACKAGE = "package";
     private static final String ATTR_NAME = "name";
 
+    
+    // Junk
+    private final String Junk_QuietTime_Settings_Changed = "JUNK_QUIET_TIME_SETTINGS";
+    private final String Junk_Led_Settings_Changed = "JUNK_LED_SETTINGS";
+	private boolean inQuietTime = false;
+	private boolean mDefaultLedColorOn;
+    
+    private int mDefNotifColor;
+    private int mDefNotifLedOn;
+    private int mDefNotifLedOff;
+    private boolean mTurnOffLed = false;
+    private boolean mTurnOffVibrate = false;
+    private boolean mTurnOffSound = false;
+    private boolean mUseLedScreenOn = false;
+    // End Junk    
+    
+    
+    
     private void loadBlockDb() {
         synchronized(mBlockedPackages) {
             if (mPolicyFile == null) {
