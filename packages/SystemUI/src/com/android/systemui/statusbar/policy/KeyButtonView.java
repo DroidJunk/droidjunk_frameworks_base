@@ -18,19 +18,21 @@ package com.android.systemui.statusbar.policy;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.hardware.input.InputManager;
-import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.ServiceManager;
 import android.util.AttributeSet;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.HapticFeedbackConstants;
-import android.view.IWindowManager;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -42,11 +44,28 @@ import android.widget.ImageView;
 
 import com.android.systemui.R;
 
-public class KeyButtonView extends ImageView {
-    private static final String TAG = "StatusBar.KeyButtonView";
+import droidjunk.colorfitermaker.ColorFilterMaker;
 
+public class KeyButtonView extends ImageView {
+	// Junk
+	private final String Junk_NavBar_Settings = "JUNK_NAVBAR_SETTINGS";
+
+    private final String NAV_BAR_BUTTON_COLOR = "nav_button_color";
+    private final String NAV_BAR_GLOW_COLOR = "nav_button_glow_color";
+    private final String NAV_BAR_ANIM_SPEED = "nav_anim_speed";
+    private final String NAV_BAR_BUTTON_INTENS = "nav_button_intens";
+    
+	private SharedPreferences mPrefs;
+	private int glowColor = 0xffffffff;
+	private int navBarButtonColor = 0xffffffff; 
+	private int navBarAnimSpeed = 5;
+	private int navBarButtonIntens = 0;
+	// End Junk
+
+	private static final String TAG = "StatusBar.KeyButtonView";
+    
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
-    final float BUTTON_QUIESCENT_ALPHA = 0.70f;
+          float BUTTON_QUIESCENT_ALPHA = 0.70f;
 
     long mDownTime;
     int mCode;
@@ -88,6 +107,29 @@ public class KeyButtonView extends ImageView {
         mSupportsLongpress = a.getBoolean(R.styleable.KeyButtonView_keyRepeat, true);
 
         mGlowBG = a.getDrawable(R.styleable.KeyButtonView_glowBackground);
+        
+		// Junk
+  		Context settingsContext = getContext();
+		try {
+			settingsContext = getContext().createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+ 		glowColor = mPrefs.getInt(NAV_BAR_GLOW_COLOR, glowColor);
+ 		navBarButtonColor = mPrefs.getInt(NAV_BAR_BUTTON_COLOR, navBarButtonColor);
+ 		navBarAnimSpeed = mPrefs.getInt(NAV_BAR_ANIM_SPEED, navBarAnimSpeed);
+ 		navBarButtonIntens = mPrefs.getInt(NAV_BAR_BUTTON_INTENS, navBarButtonIntens);
+	
+ 		updateSettings();
+        
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Junk_NavBar_Settings);
+        getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
+		// End Junk        
+        
         if (mGlowBG != null) {
             setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
             mGlowWidth = mGlowBG.getIntrinsicWidth();
@@ -98,8 +140,24 @@ public class KeyButtonView extends ImageView {
 
         setClickable(true);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+
     }
 
+    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Junk_NavBar_Settings)) {
+       	   		glowColor = intent.getIntExtra(NAV_BAR_GLOW_COLOR, glowColor);
+       	   		navBarButtonColor = intent.getIntExtra(NAV_BAR_BUTTON_COLOR, navBarButtonColor);
+       	   		navBarAnimSpeed = intent.getIntExtra(NAV_BAR_ANIM_SPEED, navBarAnimSpeed);
+       	   		navBarButtonIntens = intent.getIntExtra(NAV_BAR_BUTTON_INTENS, navBarButtonIntens);
+       	   		updateSettings();
+       	   	}
+            
+        }
+           	
+    };    
     @Override
     protected void onDraw(Canvas canvas) {
         if (mGlowBG != null) {
@@ -117,23 +175,28 @@ public class KeyButtonView extends ImageView {
             canvas.restore();
             mRect.right = w;
             mRect.bottom = h;
+            // Junk - taken from ICS
+            // buttons would not update the intens
+            canvas.saveLayerAlpha(mRect, (int)(mDrawingAlpha * 255), Canvas.ALL_SAVE_FLAG);
+            // End Junk
         }
         super.onDraw(canvas);
     }
 
+    
     public float getDrawingAlpha() {
         if (mGlowBG == null) return 0;
         return mDrawingAlpha;
     }
 
+    // Junk - Used the old method from ICS
+    // buttons would not update the intens
     public void setDrawingAlpha(float x) {
         if (mGlowBG == null) return;
-        // Calling setAlpha(int), which is an ImageView-specific
-        // method that's different from setAlpha(float). This sets
-        // the alpha on this ImageView's drawable directly
-        setAlpha((int) (x * 255));
         mDrawingAlpha = x;
+        invalidate();
     }
+
 
     public float getGlowAlpha() {
         if (mGlowBG == null) return 0;
@@ -192,14 +255,20 @@ public class KeyButtonView extends ImageView {
                         ObjectAnimator.ofFloat(this, "glowAlpha", 1f),
                         ObjectAnimator.ofFloat(this, "glowScale", GLOW_MAX_SCALE_FACTOR)
                     );
-                    as.setDuration(50);
+					// Junk
+                    //as.setDuration(50);
+                    as.setDuration(navBarAnimSpeed * 10);
+					// End Junk
                 } else {
                     as.playTogether(
                         ObjectAnimator.ofFloat(this, "glowAlpha", 0f),
                         ObjectAnimator.ofFloat(this, "glowScale", 1f),
                         ObjectAnimator.ofFloat(this, "drawingAlpha", BUTTON_QUIESCENT_ALPHA)
                     );
-                    as.setDuration(500);
+					// Junk
+                    //as.setDuration(500);
+                    as.setDuration(navBarAnimSpeed * 100);
+					// End Junk
                 }
                 as.start();
             }
@@ -283,6 +352,14 @@ public class KeyButtonView extends ImageView {
         InputManager.getInstance().injectInputEvent(ev,
                 InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
-}
 
+    protected void updateSettings() {
+    	setColorFilter(ColorFilterMaker.changeColor(navBarButtonColor, .5f));
+    	mGlowBG.setColorFilter(ColorFilterMaker.changeColor(glowColor, .6f));
+    	BUTTON_QUIESCENT_ALPHA = ((float) navBarButtonIntens / 10) + .5f;
+    	mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
+    }
+
+
+}
 

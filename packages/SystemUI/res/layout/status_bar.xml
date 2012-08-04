@@ -29,6 +29,30 @@
     android:descendantFocusability="afterDescendants"
     android:fitsSystemWindows="true"
     >
+    
+        <LinearLayout
+            android:id="@+id/clock_center"
+			android:gravity="center"
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:background="#00000000">
+ 
+			<com.android.systemui.statusbar.policy.ClockCenter
+           		android:id="@+id/clock"
+      	 		android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+           		android:layout_width="wrap_content"
+           		android:layout_height="wrap_content"
+           		android:singleLine="true"
+           		android:paddingLeft="6dip"
+           		android:paddingRight="6dip"
+           		android:gravity="center"
+           		android:layout_gravity="center"
+           		android:visibility="gone"
+           		/>
+		</LinearLayout> 
+    
+    
 
     <ImageView
         android:id="@+id/notification_lights_out"
@@ -48,6 +72,17 @@
         android:paddingRight="6dip"
         android:orientation="horizontal"
         >
+        
+        <com.android.systemui.statusbar.policy.ClockLeft
+            android:id="@+id/clock_left"
+            android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:paddingRight="6dip"
+            android:gravity="center|right"
+            android:visibility="gone"
+            />
 
         <LinearLayout
 			android:id="@+id/notification_icon_area"
@@ -90,15 +125,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
-            <ImageView
-                android:id="@+id/battery"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:paddingLeft="4dip"
-                />
+           	<include layout="@layout/battery_cluster_view" 
+               	android:id="@+id/battery_cluster"
+               	android:layout_width="wrap_content"
+               	android:layout_height="wrap_content"
+                	/>
         </LinearLayout>
 
-        <com.android.systemui.statusbar.policy.Clock
+        <com.android.systemui.statusbar.policy.ClockRight
             android:id="@+id/clock"
             android:textAppearance="@style/TextAppearance.StatusBar.Clock"
             android:layout_width="wrap_content"

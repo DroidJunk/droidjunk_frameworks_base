@@ -1397,8 +1397,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                 // Junk
            		if (mDefaultLedColorOn) {
            			ledARGB = mDefNotifColor;
-           			ledOnMS = mDefNotifLedOn;
-           			ledOffMS = mDefNotifLedOff;
+           			ledOnMS = mDefNotifLedOn * 50;
+           			ledOffMS = mDefNotifLedOff * 50;
            		} else {
            			ledARGB = mDefaultNotificationColor;
            			ledOnMS = mDefaultNotificationLedOn;

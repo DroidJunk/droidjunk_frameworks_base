@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/* 
+** Copyright 2011, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License"); 
+** you may not use this file except in compliance with the License. 
+** You may obtain a copy of the License at 
+**
+**     http://www.apache.org/licenses/LICENSE-2.0 
+**
+** Unless required by applicable law or agreed to in writing, software 
+** distributed under the License is distributed on an "AS IS" BASIS, 
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+** See the License for the specific language governing permissions and 
+** limitations under the License.
+*/
+-->
+
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:maxLevel="0" android:drawable="@drawable/junk_circseg_0_color" />
+    <item android:maxLevel="2" android:drawable="@drawable/junk_circseg_1_color" />
+    <item android:maxLevel="6" android:drawable="@drawable/junk_circseg_1_color" />
+    <item android:maxLevel="12" android:drawable="@drawable/junk_circseg_2_color" />
+    <item android:maxLevel="19" android:drawable="@drawable/junk_circseg_3_color" />
+    <item android:maxLevel="25" android:drawable="@drawable/junk_circseg_4_color" />
+    <item android:maxLevel="31" android:drawable="@drawable/junk_circseg_5_color" />
+    <item android:maxLevel="38" android:drawable="@drawable/junk_circseg_6_color" />
+    <item android:maxLevel="44" android:drawable="@drawable/junk_circseg_7_color" />
+    <item android:maxLevel="50" android:drawable="@drawable/junk_circseg_8_color" />
+    <item android:maxLevel="56" android:drawable="@drawable/junk_circseg_9_color" />
+    <item android:maxLevel="63" android:drawable="@drawable/junk_circseg_10_color" />
+    <item android:maxLevel="69" android:drawable="@drawable/junk_circseg_11_color" />
+    <item android:maxLevel="75" android:drawable="@drawable/junk_circseg_12_color" />
+    <item android:maxLevel="81" android:drawable="@drawable/junk_circseg_13_color" />
+    <item android:maxLevel="88" android:drawable="@drawable/junk_circseg_14_color" />
+    <item android:maxLevel="94" android:drawable="@drawable/junk_circseg_15_color" />
+    <item android:maxLevel="98" android:drawable="@drawable/junk_circseg_16_color" />
+</level-list>
+

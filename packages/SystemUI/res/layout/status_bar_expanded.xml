@@ -76,18 +76,21 @@
         </ScrollView>
     </FrameLayout>
 
-    <include layout="@layout/junk_toggles_bottom"
-    	android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/close_handle_height"
-        />            
+       
     
-    <com.android.systemui.statusbar.phone.CloseDragHandle android:id="@+id/close"
+    <com.android.systemui.statusbar.phone.CloseDragHandle
+        android:id="@+id/close"
         android:layout_width="match_parent"
         android:layout_height="@dimen/close_handle_height"
         android:layout_gravity="bottom"
         android:orientation="vertical"
         >
+            <include layout="@layout/junk_toggles_bottom"
+    			android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+        		android:layout_marginBottom="@dimen/close_handle_height"
+        		/>     
+        		
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/close_handle_height"

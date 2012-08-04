@@ -80,8 +80,14 @@ public class NetworkController extends BroadcastReceiver {
     String mNetworkNameDefault;
     String mNetworkNameSeparator;
     int mPhoneSignalIconId;
+    // Junk
+    int mPhoneSignalIconColorId; 
+    // End Junk
     int mDataDirectionIconId; // data + data direction on phones
     int mDataSignalIconId;
+    // Junk
+    int mDataSignalIconColorId; 
+    // End Junk
     int mDataTypeIconId;
     int mAirplaneIconId;
     boolean mDataActive;
@@ -104,6 +110,9 @@ public class NetworkController extends BroadcastReceiver {
     int mWifiRssi, mWifiLevel;
     String mWifiSsid;
     int mWifiIconId = 0;
+    // Junk
+	int mWifiIconColorId = 0;  
+	// End Junk
     int mWifiActivityIconId = 0; // overlay arrows for wifi direction
     int mWifiActivity = WifiManager.DATA_ACTIVITY_NONE;
 
@@ -118,6 +127,9 @@ public class NetworkController extends BroadcastReceiver {
     private boolean mWimaxConnected = false;
     private boolean mWimaxIdle = false;
     private int mWimaxIconId = 0;
+    // Junk
+    private int mWimaxIconColorId = 0; 
+    // End Junk
     private int mWimaxSignal = 0;
     private int mWimaxState = 0;
     private int mWimaxExtraState = 0;
@@ -163,10 +175,12 @@ public class NetworkController extends BroadcastReceiver {
     IBatteryStats mBatteryStats;
 
     public interface SignalCluster {
-        void setWifiIndicators(boolean visible, int strengthIcon, int activityIcon,
+		// Junk - added strengthIconColor
+		void setWifiIndicators(boolean visible, int strengthIcon, int strengthIconColor, int activityIcon, 
                 String contentDescription);
-        void setMobileDataIndicators(boolean visible, int strengthIcon, int activityIcon,
+        void setMobileDataIndicators(boolean visible, int strengthIcon, int strengthIconColor, int activityIcon,
                 int typeIcon, String contentDescription, String typeContentDescription);
+        // End Junk
         void setIsAirplaneMode(boolean is, int airplaneIcon);
     }
 
@@ -292,16 +306,20 @@ public class NetworkController extends BroadcastReceiver {
     public void refreshSignalCluster(SignalCluster cluster) {
         cluster.setWifiIndicators(
                 // only show wifi in the cluster if connected or if wifi-only
+        		// Junk - added mWifiIconColorId
                 mWifiEnabled && (mWifiConnected || !mHasMobileDataFeature),
                 mWifiIconId,
+                mWifiIconColorId,
                 mWifiActivityIconId,
                 mContentDescriptionWifi);
 
         if (mIsWimaxEnabled && mWimaxConnected) {
             // wimax is special
+        	// Junk - added mWimaxIconColorId
             cluster.setMobileDataIndicators(
                     true,
-                    mAlwaysShowCdmaRssi ? mPhoneSignalIconId : mWimaxIconId,
+                    mWimaxIconId,
+                    mWimaxIconColorId,
                     mMobileActivityIconId,
                     mDataTypeIconId,
                     mContentDescriptionWimax,
@@ -311,6 +329,9 @@ public class NetworkController extends BroadcastReceiver {
             cluster.setMobileDataIndicators(
                     mHasMobileDataFeature,
                     mShowPhoneRSSIForData ? mPhoneSignalIconId : mDataSignalIconId,
+                    // Junk
+                    mShowPhoneRSSIForData ? mPhoneSignalIconColorId : mDataSignalIconColorId,
+                    // End Junk
                     mMobileActivityIconId,
                     mDataTypeIconId,
                     mContentDescriptionPhoneSignal,
@@ -473,16 +494,27 @@ public class NetworkController extends BroadcastReceiver {
             if (CHATTY) Slog.d(TAG, "updateTelephonySignalStrength: !hasService()");
             mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
             mDataSignalIconId = R.drawable.stat_sys_signal_null;
+            // Junk
+            mPhoneSignalIconColorId = R.drawable.stat_sys_signal_trans;
+            mDataSignalIconColorId = R.drawable.stat_sys_signal_trans;
+            // End Junk
         } else {
             if (mSignalStrength == null) {
                 if (CHATTY) Slog.d(TAG, "updateTelephonySignalStrength: mSignalStrength == null");
                 mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
                 mDataSignalIconId = R.drawable.stat_sys_signal_null;
+                // Junk
+                mPhoneSignalIconColorId = R.drawable.stat_sys_signal_trans;
+                mDataSignalIconColorId = R.drawable.stat_sys_signal_trans;
+                // End Junk
                 mContentDescriptionPhoneSignal = mContext.getString(
                         AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0]);
             } else {
                 int iconLevel;
                 int[] iconList;
+				// Junk
+				int[] iconListColor;
+				// End Junk
                 if (isCdma() && mAlwaysShowCdmaRssi) {
                     mLastSignalLevel = iconLevel = mSignalStrength.getCdmaLevel();
                     if(DEBUG) Slog.d(TAG, "mAlwaysShowCdmaRssi=" + mAlwaysShowCdmaRssi
@@ -495,21 +527,40 @@ public class NetworkController extends BroadcastReceiver {
                 if (isCdma()) {
                     if (isCdmaEri()) {
                         iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH_ROAMING[mInetCondition];
+                        // Junk
+                        iconListColor = TelephonyIconsColor.TELEPHONY_SIGNAL_STRENGTH_ROAMING[mInetCondition];
+                        // End Junk
                     } else {
                         iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH[mInetCondition];
+                        // Junk
+                        iconListColor = TelephonyIconsColor.TELEPHONY_SIGNAL_STRENGTH[mInetCondition];
+                        // End Junk
                     }
                 } else {
                     // Though mPhone is a Manager, this call is not an IPC
                     if (mPhone.isNetworkRoaming()) {
                         iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH_ROAMING[mInetCondition];
+                        // Junk
+                        iconListColor = TelephonyIconsColor.TELEPHONY_SIGNAL_STRENGTH_ROAMING[mInetCondition];
+                        // End Junk
                     } else {
                         iconList = TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH[mInetCondition];
+                        // Junk
+                        iconListColor = TelephonyIconsColor.TELEPHONY_SIGNAL_STRENGTH[mInetCondition];
+                        // End Junk
                     }
                 }
                 mPhoneSignalIconId = iconList[iconLevel];
+                // Junk
+                mPhoneSignalIconColorId = iconListColor[iconLevel];
+                // End Junk
                 mContentDescriptionPhoneSignal = mContext.getString(
                         AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[iconLevel]);
+
                 mDataSignalIconId = TelephonyIcons.DATA_SIGNAL_STRENGTH[mInetCondition][iconLevel];
+                // Junk
+                mDataSignalIconColorId = TelephonyIconsColor.DATA_SIGNAL_STRENGTH[mInetCondition][iconLevel];
+                // End Junk
             }
         }
     }
@@ -790,13 +841,22 @@ public class NetworkController extends BroadcastReceiver {
     private void updateWifiIcons() {
         if (mWifiConnected) {
             mWifiIconId = WifiIcons.WIFI_SIGNAL_STRENGTH[mInetCondition][mWifiLevel];
+            // Junk
+            mWifiIconColorId = WifiIconsColor.WIFI_SIGNAL_STRENGTH[mInetCondition][mWifiLevel];
+            // End Junk
             mContentDescriptionWifi = mContext.getString(
                     AccessibilityContentDescriptions.WIFI_CONNECTION_STRENGTH[mWifiLevel]);
         } else {
             if (mDataAndWifiStacked) {
                 mWifiIconId = 0;
+                // Junk
+                mWifiIconColorId = 0;
+                // End Junk
             } else {
                 mWifiIconId = mWifiEnabled ? R.drawable.stat_sys_wifi_signal_null : 0;
+                // Junk
+                mWifiIconColorId = mWifiEnabled ? WifiIconsColor.WIFI_SIGNAL_STRENGTH[0][0] : 0;
+                // End Junk
             }
             mContentDescriptionWifi = mContext.getString(R.string.accessibility_no_wifi);
         }
@@ -1027,7 +1087,10 @@ public class NetworkController extends BroadcastReceiver {
                     R.string.accessibility_airplane_mode);
             mAirplaneIconId = R.drawable.stat_sys_signal_flightmode;
             mPhoneSignalIconId = mDataSignalIconId = mDataTypeIconId = 0;
-
+            // Junk
+            mPhoneSignalIconColorId = mDataSignalIconColorId = R.drawable.stat_sys_signal_trans;
+            // End Junk
+            
             // combined values from connected wifi take precedence over airplane mode
             if (mWifiConnected) {
                 // Suppress "No internet connection." from mobile if wifi connected.

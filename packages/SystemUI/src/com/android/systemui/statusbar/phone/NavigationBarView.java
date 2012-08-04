@@ -20,7 +20,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.StatusBarManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -52,7 +57,22 @@ import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 
+import droidjunk.colorfitermaker.ColorFilterMaker;
+
 public class NavigationBarView extends LinearLayout {
+
+	// Junk
+	private final String Junk_NavBar_Settings = "JUNK_NAVBAR_SETTINGS";
+	private SharedPreferences sp;
+	private final String NAV_BAR_COLOR = "nav_bar_color";
+    private final String SHOW_SEARCH_BUTTON = "search_button";
+	private final String SHOW_LEFT_MENU_BUTTON = "left_menu_button";
+	private final String SHOW_RIGHT_MENU_BUTTON = "right_menu_button";
+    private final String SHOW_SEARCH_BUTTON_LAND = "search_button_land";
+	private final String SHOW_TOP_MENU_BUTTON_LAND = "top_menu_button_land";
+	private final String SHOW_BOT_MENU_BUTTON_LAND = "bottom_menu_button_land";
+	// End Junk
+
     final static boolean DEBUG = false;
     final static String TAG = "PhoneStatusBar/NavigationBarView";
 
@@ -77,6 +97,18 @@ public class NavigationBarView extends LinearLayout {
     private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon;
     
     private DelegateViewHelper mDelegateHelper;
+
+    // Junk
+    private float scale = 0; 
+    private int mBarColor = 0xff000000;
+    private boolean mShowSearchButton = false;
+    private boolean mShowLeftMenuButton = true;
+    private boolean mShowRightMenuButton = true;
+    private boolean mShowSearchButtonLand = false;
+    private boolean mShowTopMenuButtonLand = true;
+    private boolean mShowBotMenuButtonLand = true;
+    private int mHorizAdjust = 0;
+    // End Junk    
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -164,7 +196,49 @@ public class NavigationBarView extends LinearLayout {
         mBackLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_land);
         mBackAltIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime);
         mBackAltLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime);
+
+		// Junk  		
+		Context settingsContext = getContext();
+		try {
+			settingsContext = getContext().createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		mBarColor = sp.getInt(NAV_BAR_COLOR, mBarColor); 
+        mShowSearchButton = sp.getBoolean(SHOW_SEARCH_BUTTON, false);
+        mShowLeftMenuButton = sp.getBoolean(SHOW_LEFT_MENU_BUTTON, true);
+        mShowRightMenuButton = sp.getBoolean(SHOW_RIGHT_MENU_BUTTON, true);
+        mShowSearchButtonLand = sp.getBoolean(SHOW_SEARCH_BUTTON_LAND, false);
+        mShowTopMenuButtonLand = sp.getBoolean(SHOW_TOP_MENU_BUTTON_LAND, true);
+        mShowBotMenuButtonLand = sp.getBoolean(SHOW_BOT_MENU_BUTTON_LAND, true);
+        getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .5f, .0f));
+        
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Junk_NavBar_Settings);
+        getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());        
+		// End Junk
     }
+
+    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Junk_NavBar_Settings)) {
+            	mBarColor = intent.getIntExtra(NAV_BAR_COLOR, mBarColor);
+            	mShowSearchButton = intent.getBooleanExtra(SHOW_SEARCH_BUTTON, mShowSearchButton);
+       	   		mShowLeftMenuButton = intent.getBooleanExtra(SHOW_LEFT_MENU_BUTTON, mShowLeftMenuButton);
+       	   		mShowRightMenuButton = intent.getBooleanExtra(SHOW_RIGHT_MENU_BUTTON, mShowRightMenuButton);
+           	   	mShowSearchButtonLand = intent.getBooleanExtra(SHOW_SEARCH_BUTTON_LAND, mShowSearchButtonLand);
+       	   		mShowTopMenuButtonLand = intent.getBooleanExtra(SHOW_TOP_MENU_BUTTON_LAND, mShowTopMenuButtonLand);
+       	   		mShowBotMenuButtonLand = intent.getBooleanExtra(SHOW_BOT_MENU_BUTTON_LAND, mShowBotMenuButtonLand);
+       	   		reorient();
+            }
+        }
+    };   
+
 
     View.OnTouchListener mLightsOutListener = new View.OnTouchListener() {
         @Override
@@ -344,6 +418,9 @@ public class NavigationBarView extends LinearLayout {
         setLowProfile(mLowProfile, false, true /* force */);
         setDisabledFlags(mDisabledFlags, true /* force */);
         setMenuVisibility(mShowMenu, true /* force */);
+        // Junk
+        getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .5f, .0f));
+        // End Junk
 
         if (DEBUG_DEADZONE) {
             mCurrentView.findViewById(R.id.deadzone).setBackgroundColor(0x808080FF);
@@ -378,27 +455,6 @@ public class NavigationBarView extends LinearLayout {
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
-    /*
-    @Override
-    protected void onLayout (boolean changed, int left, int top, int right, int bottom) {
-        if (DEBUG) Slog.d(TAG, String.format(
-                    "onLayout: %s (%d,%d,%d,%d)", 
-                    changed?"changed":"notchanged", left, top, right, bottom));
-        super.onLayout(changed, left, top, right, bottom);
-    }
-
-    // uncomment this for extra defensiveness in WORKAROUND_INVALID_LAYOUT situations: if all else
-    // fails, any touch on the display will fix the layout.
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (DEBUG) Slog.d(TAG, "onInterceptTouchEvent: " + ev.toString());
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            postCheckForInvalidLayout("touch");
-        }
-        return super.onInterceptTouchEvent(ev);
-    }
-    */
-        
 
     private String getResourceName(int resId) {
         if (resId != 0) {

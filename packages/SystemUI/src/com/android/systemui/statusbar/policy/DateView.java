@@ -20,6 +20,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -36,7 +38,14 @@ public final class DateView extends TextView {
     private boolean mAttachedToWindow;
     private boolean mWindowVisible;
     private boolean mUpdating;
-
+    // Junk
+	private final String Junk_Pulldown_Settings = "JUNK_PULLDOWN_SETTINGS";
+	private final String DATE_COLOR = "date_color";
+	private final String DATE_SIZE = "date_size";
+	private SharedPreferences sp;
+    private int mDateColor = 0xff00a2e5;
+    private int mDateSize = 17;
+    //End Junk
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -46,6 +55,13 @@ public final class DateView extends TextView {
                     || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
                 updateClock();
             }
+            // Junk
+            if (action.equals(Junk_Pulldown_Settings)) {
+            	mDateColor = intent.getIntExtra(DATE_COLOR, mDateColor);	
+            	mDateSize = intent.getIntExtra(DATE_SIZE, mDateSize);
+            	updateClock();
+            }
+            // End Junk
         }
     };
 
@@ -57,6 +73,18 @@ public final class DateView extends TextView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mAttachedToWindow = true;
+        // Junk
+  		Context settingsContext = getContext();
+		try {
+			settingsContext = getContext().createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+ 		
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		mDateColor = sp.getInt(DATE_COLOR, 0xff00a2e5);
+		mDateSize = sp.getInt(DATE_SIZE, 17);
+        // End Junk
         setUpdates();
     }
     
@@ -92,6 +120,10 @@ public final class DateView extends TextView {
         CharSequence dow = DateFormat.format("EEEE", now);
         CharSequence date = DateFormat.getLongDateFormat(context).format(now);
         setText(context.getString(R.string.status_bar_date_formatter, dow, date));
+        // Junk
+        setTextColor(mDateColor);
+        setTextSize(mDateSize);
+        // End Junk
     }
 
     private boolean isVisible() {
@@ -119,6 +151,9 @@ public final class DateView extends TextView {
                 filter.addAction(Intent.ACTION_TIME_TICK);
                 filter.addAction(Intent.ACTION_TIME_CHANGED);
                 filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+                // Junk
+                filter.addAction(Junk_Pulldown_Settings);
+                // End Junk
                 mContext.registerReceiver(mIntentReceiver, filter, null, null);
                 updateClock();
             } else {

@@ -20,6 +20,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -47,7 +49,7 @@ import com.android.internal.R;
  * This widget display an analogic clock with two hands for hours and
  * minutes.
  */
-public class Clock extends TextView {
+public class ClockRight extends TextView {
     private boolean mAttached;
     private Calendar mCalendar;
     private String mClockFormatString;
@@ -57,17 +59,30 @@ public class Clock extends TextView {
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
 
-    private static final int AM_PM_STYLE = AM_PM_STYLE_GONE;
+    private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
 
-    public Clock(Context context) {
+    // Junk
+	private final String Junk_Clock_Settings = "JUNK_CLOCK_SETTINGS";
+	private final String SHOW_CLOCK_RIGHT = "show_clock_right";
+	private final String CLOCK_AMPM = "clock_ampm";
+	private final String CLOCK_COLOR = "clock_color";
+	private final String CLOCK_SIZE = "clock_size";
+	private SharedPreferences mPrefs;
+    private boolean mShowClockRight = true;
+    private boolean mClockAmPm = false;
+    private int mClockColor = 0xff3F9BBF;
+    private int mClockSize = 17;    
+    // End Junk
+    
+    public ClockRight(Context context) {
         this(context, null);
     }
 
-    public Clock(Context context, AttributeSet attrs) {
+    public ClockRight(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public Clock(Context context, AttributeSet attrs, int defStyle) {
+    public ClockRight(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -83,10 +98,30 @@ public class Clock extends TextView {
             filter.addAction(Intent.ACTION_TIME_CHANGED);
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
-
+            // Junk
+            filter.addAction(Junk_Clock_Settings);
+            //End Junk
+            
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
 
+        // Junk
+ 		Context settingsContext = getContext();
+		try {
+			settingsContext = getContext().createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 		
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+ 		
+ 		mShowClockRight = mPrefs.getBoolean(SHOW_CLOCK_RIGHT, mShowClockRight);
+ 		mClockAmPm = mPrefs.getBoolean(CLOCK_AMPM, mClockAmPm);
+		mClockColor = mPrefs.getInt(CLOCK_COLOR, mClockColor);
+		mClockSize = mPrefs.getInt(CLOCK_SIZE, mClockSize);
+		// End Junk
+		
         // NOTE: It's safe to do these after registering the receiver since the receiver always runs
         // in the main thread, therefore the receiver can't run before this method returns.
 
@@ -94,7 +129,15 @@ public class Clock extends TextView {
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
         // Make sure we update to the current time
-        updateClock();
+        // Junk
+        if (mShowClockRight) {
+        	setVisibility(VISIBLE);
+        } else {
+        	setVisibility(GONE);
+        }
+        if (mShowClockRight) updateClock();
+        // End Junk
+        
     }
 
     @Override
@@ -110,6 +153,21 @@ public class Clock extends TextView {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            // Junk
+            if (action.equals(Junk_Clock_Settings)) {
+             	mShowClockRight = intent.getBooleanExtra(SHOW_CLOCK_RIGHT, mShowClockRight);
+            	mClockAmPm = intent.getBooleanExtra(CLOCK_AMPM, mClockAmPm);
+  	   			mClockColor = intent.getIntExtra(CLOCK_COLOR, mClockColor);	
+            	mClockSize = intent.getIntExtra(CLOCK_SIZE, mClockSize);
+
+            	if (mShowClockRight) {
+                	setVisibility(VISIBLE);
+                } else {
+                	setVisibility(GONE);
+                }
+
+            }
+            // End Junk
             if (action.equals(Intent.ACTION_TIMEZONE_CHANGED)) {
                 String tz = intent.getStringExtra("time-zone");
                 mCalendar = Calendar.getInstance(TimeZone.getTimeZone(tz));
@@ -117,11 +175,23 @@ public class Clock extends TextView {
                     mClockFormat.setTimeZone(mCalendar.getTimeZone());
                 }
             }
-            updateClock();
+            // Junk
+            if (mShowClockRight) updateClock();
+            // End Junk
         }
     };
 
     final void updateClock() {
+    	// Junk
+        if (mClockAmPm) {
+        	AM_PM_STYLE = AM_PM_STYLE_SMALL;
+        } else {
+        	AM_PM_STYLE = AM_PM_STYLE_GONE;
+        }
+        
+        setTextColor(mClockColor);
+        setTextSize(mClockSize);
+    	// End Junk
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());
     }

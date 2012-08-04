@@ -17,7 +17,6 @@
 package com.android.systemui.statusbar.phone;
 
 import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -32,6 +31,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -68,7 +69,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -91,6 +91,8 @@ import com.android.systemui.statusbar.policy.OnSizeChangedListener;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 
+import droidjunk.colorfitermaker.ColorFilterMaker;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -101,6 +103,40 @@ public class PhoneStatusBar extends BaseStatusBar {
     public static final boolean SPEW = DEBUG;
     public static final boolean DUMPTRUCK = true; // extra dumpsys info
 
+    // Junk
+    private final String Junk_Icon_Settings = "JUNK_ICON_SETTINGS";
+	private final String Junk_NavBar_Settings = "JUNK_NAVBAR_SETTINGS";
+	private final String Junk_Pulldown_Settings = "JUNK_PULLDOWN_SETTINGS";
+	private final String ICON_COLOR = "icon_color";
+	private final String DATE_BAR_COLOR = "date_bar_color";
+	private final String CLEAR_BUTTON_COLOR = "clear_button_color";
+	private final String CLEAR_BUTTON_TEXT_COLOR = "clear_button_text_color";
+	private final String PD_HANDLE_COLOR = "pd_handle_color";
+	private final String PD_SHADE_COLOR = "pd_shade_color";
+	private final String PD_CARRIER_FRAME_COLOR = "pd_carrier_frame_color";
+	private final String PD_GRIP_COLOR = "pd_grip_color";
+	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
+
+	private SharedPreferences sp;  
+    private int mIconColor = 0xff3fa2c7;
+    private int mClearButtonColor = 0xff1a4554;
+    private int mClearButtonTextColor = 0xffffffff;
+    private int mHandleColor = 0xd7000000;
+    private int mShadeColor = 0xbd000000;
+    private int mGripColor = 0xff3792b4;
+    private int mCarrierFrameColor = 0xd3000000;
+    private int mNotifTextBgColor = 0xff2782a3;
+    private LinearLayout mClockCenter;
+    private View mHandle;
+    private View mShadeView;
+    private View mGripView;
+    private View mCarrierFrameView;
+    private int mDateBarColor = 0xff000000;
+	private View mDateBar;    
+	private View mJunkSettingsButton;
+    // End Junk
+    
+    
     // additional instrumentation for testing purposes; intended to be left on during development
     public static final boolean CHATTY = DEBUG;
 
@@ -140,7 +176,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     PhoneStatusBarPolicy mIconPolicy;
 
     // These are no longer handled by the policy, because we need custom strategies for them
-    BatteryController mBatteryController;
     LocationController mLocationController;
     NetworkController mNetworkController;
 
@@ -329,6 +364,28 @@ public class PhoneStatusBar extends BaseStatusBar {
     protected PhoneStatusBarView makeStatusBarView() {
         final Context context = mContext;
 
+        // Junk
+  		Context settingsContext = mContext;
+		try {
+			settingsContext = mContext.createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+   		mIconColor = sp.getInt(ICON_COLOR, mIconColor);
+   		mHandleColor = sp.getInt(PD_HANDLE_COLOR, mHandleColor);
+    	mDateBarColor = sp.getInt(DATE_BAR_COLOR, mDateBarColor);
+   		mClearButtonColor = sp.getInt(CLEAR_BUTTON_COLOR, mClearButtonColor);
+   		mClearButtonTextColor = sp.getInt(CLEAR_BUTTON_TEXT_COLOR, mClearButtonTextColor);
+   		mShadeColor = sp.getInt(PD_SHADE_COLOR, mShadeColor);
+   		mGripColor = sp.getInt(PD_GRIP_COLOR, mGripColor);
+   		mCarrierFrameColor = sp.getInt(PD_CARRIER_FRAME_COLOR, mCarrierFrameColor);
+   		mNotifTextBgColor = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
+   		// End Junk        
+        
+        
         Resources res = context.getResources();
 
         updateDisplaySize(); // populates mDisplayMetrics
@@ -428,6 +485,11 @@ public class PhoneStatusBar extends BaseStatusBar {
         mDateView = (DateView)mStatusBarWindow.findViewById(R.id.date);
         mSettingsButton = mStatusBarWindow.findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
+        // Junk
+        mClockCenter = (LinearLayout)mStatusBarWindow.findViewById(R.id.clock_center);
+        mJunkSettingsButton = mStatusBarWindow.findViewById(R.id.junk_settings_button);
+        mJunkSettingsButton.setOnClickListener(mJunkSettingsButtonListener);
+        // End Junk
         mRotationButton = (RotationToggle) mStatusBarWindow.findViewById(R.id.rotation_lock_button);
         
         mCarrierLabel = (TextView)mStatusBarWindow.findViewById(R.id.carrier_label);
@@ -452,8 +514,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         // Other icons
         mLocationController = new LocationController(mContext); // will post a notification
-        mBatteryController = new BatteryController(mContext);
-        mBatteryController.addIconView((ImageView)mStatusBarView.findViewById(R.id.battery));
         mNetworkController = new NetworkController(mContext);
         final SignalClusterView signalCluster =
                 (SignalClusterView)mStatusBarView.findViewById(R.id.signal_cluster);
@@ -485,6 +545,11 @@ public class PhoneStatusBar extends BaseStatusBar {
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
+        // Junk
+        filter.addAction(Junk_Icon_Settings);
+        filter.addAction(Junk_NavBar_Settings);
+        filter.addAction(Junk_Pulldown_Settings);
+        // End Junk
         context.registerReceiver(mBroadcastReceiver, filter);
 
         return mStatusBarView;
@@ -857,6 +922,9 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
         mSettingsButton.setEnabled(isDeviceProvisioned());
+        // Junk
+        mJunkSettingsButton.setEnabled(isDeviceProvisioned());
+        // End Junk
     }
 
     private void reloadAllNotificationIcons() {
@@ -1876,24 +1944,42 @@ public class PhoneStatusBar extends BaseStatusBar {
         public void tickerStarting() {
             mTicking = true;
             mIcons.setVisibility(View.GONE);
+            // Junk
+            mClockCenter.setVisibility(View.GONE);
+            // End Junk
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+            // Junk
+            mClockCenter.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+            // End Junk
         }
 
         @Override
         public void tickerDone() {
             mIcons.setVisibility(View.VISIBLE);
+            // Junk
+            mClockCenter.setVisibility(View.VISIBLE);
+            // End Junk
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+            // Junk
+            mClockCenter.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+            // End Junk
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                         mTickingDoneListener));
         }
 
         public void tickerHalting() {
             mIcons.setVisibility(View.VISIBLE);
+            // Junk
+            mClockCenter.setVisibility(View.VISIBLE);
+            // End Junk
             mTickerView.setVisibility(View.GONE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
+            // Junk
+            mClockCenter.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
+            // End Junk
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out,
                         mTickingDoneListener));
         }
@@ -2244,10 +2330,54 @@ public class PhoneStatusBar extends BaseStatusBar {
             animateCollapse();
         }
     };
-
+    
+    // Junk
+    private View.OnClickListener mJunkSettingsButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            // We take this as a good indicator that Setup is running and we shouldn't
+            // allow you to go somewhere else
+            if (!isDeviceProvisioned()) return;
+            try {
+                // Dismiss the lock screen when Settings starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
+            v.getContext().startActivity(new Intent("android.settings.CUSTOM_JUNK_SETTINGS")
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            animateCollapse();
+        }
+    };
+    // End Junk
+    
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            // Junk
+            if (action.equals(Junk_Icon_Settings)) {
+            	mIconColor = intent.getIntExtra(ICON_COLOR, mIconColor);
+            	mStatusIcons.invalidate();
+            }
+
+            if (action.equals(Junk_Pulldown_Settings)) {
+            	mClearButtonColor = intent.getIntExtra(CLEAR_BUTTON_COLOR, mClearButtonColor);
+            	mClearButtonTextColor = intent.getIntExtra(CLEAR_BUTTON_TEXT_COLOR, mClearButtonTextColor);
+            	mDateBarColor = intent.getIntExtra(DATE_BAR_COLOR, mDateBarColor);
+            	mHandleColor = intent.getIntExtra(PD_HANDLE_COLOR, mHandleColor);
+            	mShadeColor = intent.getIntExtra(PD_SHADE_COLOR, mShadeColor);
+            	mGripColor = intent.getIntExtra(PD_GRIP_COLOR, mGripColor);
+            	mCarrierFrameColor = intent.getIntExtra(PD_CARRIER_FRAME_COLOR, mCarrierFrameColor);
+            	mNotifTextBgColor = intent.getIntExtra(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
+            	
+            	mDateBar.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mDateBarColor, .5f));
+                mShadeView.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mShadeColor, .5f));
+                mHandle.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mHandleColor, .5f));
+                mGripView.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mGripColor, .5f));
+                mCarrierFrameView.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mCarrierFrameColor, .5f));
+        		//mClearButton.setTextColor(mClearButtonTextColor);
+                //mClearButton.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mClearButtonColor, .35f));
+           		
+            }    
+            // End Junk
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
                     || Intent.ACTION_SCREEN_OFF.equals(action)) {
                 int flags = CommandQueue.FLAG_EXCLUDE_NONE;

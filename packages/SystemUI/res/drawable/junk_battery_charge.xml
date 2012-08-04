@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:maxLevel="1">
+        <animation-list android:oneshot="false"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:duration="100" android:drawable="@drawable/junk_charge_icon" />
+            <item android:duration="100" android:drawable="@drawable/junk_transparent_icon" />
+        </animation-list>
+    </item>
+
+    <item android:maxLevel="20">
+        <animation-list android:oneshot="false"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:duration="200" android:drawable="@drawable/junk_charge_icon" />
+            <item android:duration="200" android:drawable="@drawable/junk_transparent_icon" />
+        </animation-list>
+    </item>
+
+    <item android:maxLevel="40">
+        <animation-list android:oneshot="false"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:duration="300" android:drawable="@drawable/junk_charge_icon" />
+            <item android:duration="300" android:drawable="@drawable/junk_transparent_icon" />
+        </animation-list>
+    </item>
+
+    <item android:maxLevel="60">
+        <animation-list android:oneshot="false"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:duration="400" android:drawable="@drawable/junk_charge_icon" />
+            <item android:duration="400" android:drawable="@drawable/junk_transparent_icon" />
+        </animation-list>
+    </item>
+
+    <item android:maxLevel="80">
+        <animation-list android:oneshot="false"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:duration="500" android:drawable="@drawable/junk_charge_icon" />
+            <item android:duration="500" android:drawable="@drawable/junk_transparent_icon" />
+        </animation-list>
+    </item>
+
+    <item android:maxLevel="100">
+        <animation-list android:oneshot="false"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:duration="600" android:drawable="@drawable/junk_charge_icon" />
+            <item android:duration="600" android:drawable="@drawable/junk_transparent_icon" />
+        </animation-list>
+    </item>
+
+    <item android:maxLevel="101">
+        <animation-list android:oneshot="false"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:duration="300" android:drawable="@drawable/junk_transparent_icon" />
+        </animation-list>
+    </item>
+</level-list>

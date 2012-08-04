@@ -48,7 +48,8 @@
                 android:layout_weight="0"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/back"
                 android:layout_width="@dimen/navigation_key_width"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_back"
@@ -64,7 +65,8 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/home"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/home"
                 android:layout_width="@dimen/navigation_key_width"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_home"
@@ -80,7 +82,8 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/recent_apps"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/recent_apps"
                 android:layout_width="@dimen/navigation_key_width"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_recent"
@@ -88,7 +91,8 @@
                 systemui:glowBackground="@drawable/ic_sysbar_highlight"
                 android:contentDescription="@string/accessibility_recent"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/menu"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/menu"
                 android:layout_width="@dimen/navigation_menu_key_width"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_menu"
@@ -171,7 +175,8 @@
             >
             
             <!-- navigation controls -->
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/menu"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/menu"
                 android:layout_height="40dp"
                 android:layout_width="match_parent"
                 android:src="@drawable/ic_sysbar_menu_land"
@@ -181,7 +186,8 @@
                 android:contentDescription="@string/accessibility_menu"
                 systemui:glowBackground="@drawable/ic_sysbar_highlight_land"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/recent_apps"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/recent_apps"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
                 android:src="@drawable/ic_sysbar_recent_land"
@@ -195,7 +201,8 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/home"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/home"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
                 android:src="@drawable/ic_sysbar_home_land"
@@ -211,7 +218,8 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
+            <com.android.systemui.statusbar.policy.KeyButtonView 
+                android:id="@+id/back"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
                 android:src="@drawable/ic_sysbar_back_land"
