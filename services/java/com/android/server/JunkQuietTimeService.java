@@ -159,12 +159,12 @@ public class JunkQuietTimeService {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
             	withinQuietTime = inQuietTime();
-            	setupNotification(mUseNotif);
+            	setupNotification(mQTOnOff);
             }
             if (action.equals(Intent.ACTION_DATE_CHANGED)) {
             	withinQuietTime = inQuietTime();
             	setupNotifStrings();
-            	setupNotification(mUseNotif);
+            	setupNotification(mQTOnOff);
             }
             if (action.equals(Junk_QuietTime_Settings)) {
                 mQTOnOff = intent.getBooleanExtra(QUIET_TIME, mQTOnOff);  
@@ -247,7 +247,6 @@ public class JunkQuietTimeService {
             	thurTurnOffLed = intent.getBooleanExtra(NOTIF_LED_ON, thurTurnOffLed);
             	thurTurnOffSound = intent.getBooleanExtra(NOTIF_SOUND_ON, thurTurnOffSound);
             	thurTurnOffVibrate = intent.getBooleanExtra(NOTIF_VIBRATE_ON, thurTurnOffVibrate);
-            	Log.e("**************************************** ", String.valueOf(thurQuietTime));
             	withinQuietTime = inQuietTime();
             	setupNotifStrings();
             	setupNotification(mQTOnOff);
