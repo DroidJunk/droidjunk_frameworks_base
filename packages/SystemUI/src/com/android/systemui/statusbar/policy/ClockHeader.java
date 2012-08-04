@@ -63,13 +63,13 @@ public class ClockHeader extends TextView {
 
     // Junk
     private final String Junk_Pulldown_Settings = "JUNK_PULLDOWN_SETTINGS";
-	private final String SHOW_CLOCK_HEADER = "show_clock_header";
-	private final String CLOCK_COLOR = "clock_color";
-	private final String CLOCK_SIZE = "clock_size";
-	private SharedPreferences mPrefs;
-    private boolean mShowClockHeader = true;
-    private int mClockColor = 0xff3F9BBF;
-    private int mClockSize = 27;    
+	private final String HEADER_CLOCK_SHOW = "header_clock_show";
+	private final String HEADER_CLOCK_COLOR = "header_clock_color";
+	private final String HEADER_CLOCK_SIZE = "header_clock_size";
+	private SharedPreferences sp;
+    private boolean mHeaderClockShow = true;
+    private int mHeaderClockColor = 0xffffffff;
+    private int mHeaderClockSize = 27;    
     // End Junk
     
     public ClockHeader(Context context) {
@@ -112,11 +112,11 @@ public class ClockHeader extends TextView {
 			e.printStackTrace();
 		}
  		
-		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
  		
- 		mShowClockHeader = mPrefs.getBoolean(SHOW_CLOCK_HEADER, mShowClockHeader);
-		mClockColor = mPrefs.getInt(CLOCK_COLOR, mClockColor);
-		mClockSize = mPrefs.getInt(CLOCK_SIZE, mClockSize);
+ 		mHeaderClockShow = sp.getBoolean(HEADER_CLOCK_SHOW, mHeaderClockShow);
+		mHeaderClockColor = sp.getInt(HEADER_CLOCK_COLOR, mHeaderClockColor);
+		mHeaderClockSize = sp.getInt(HEADER_CLOCK_SIZE, mHeaderClockSize);
 		// End Junk
 		
         // NOTE: It's safe to do these after registering the receiver since the receiver always runs
@@ -125,14 +125,9 @@ public class ClockHeader extends TextView {
         // The time zone may have changed while the receiver wasn't registered, so update the Time
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
-        // Make sure we update to the current time
         // Junk
-        if (mShowClockHeader) {
-        	setVisibility(VISIBLE);
-        } else {
-        	setVisibility(GONE);
-        }
-        if (mShowClockHeader) updateClock();
+        setVisibility(mHeaderClockShow ? VISIBLE : GONE);
+        if (mHeaderClockShow) updateClock();
         // End Junk
         
     }
@@ -152,16 +147,9 @@ public class ClockHeader extends TextView {
             String action = intent.getAction();
             // Junk
             if (action.equals(Junk_Pulldown_Settings)) {
-             	mShowClockHeader = intent.getBooleanExtra(SHOW_CLOCK_HEADER, mShowClockHeader);
-  	   			mClockColor = intent.getIntExtra(CLOCK_COLOR, mClockColor);	
-            	mClockSize = intent.getIntExtra(CLOCK_SIZE, mClockSize);
-
-            	if (mShowClockHeader) {
-                	setVisibility(VISIBLE);
-                } else {
-                	setVisibility(GONE);
-                }
-
+            	mHeaderClockShow = intent.getBooleanExtra(HEADER_CLOCK_SHOW, mHeaderClockShow);
+  	   			mHeaderClockColor = intent.getIntExtra(HEADER_CLOCK_COLOR, mHeaderClockColor);	
+            	mHeaderClockSize = intent.getIntExtra(HEADER_CLOCK_SIZE, mHeaderClockSize);
             }
             // End Junk
             if (action.equals(Intent.ACTION_TIMEZONE_CHANGED)) {
@@ -172,15 +160,16 @@ public class ClockHeader extends TextView {
                 }
             }
             // Junk
-            if (mShowClockHeader) updateClock();
+            setVisibility(mHeaderClockShow ? VISIBLE : GONE);
+            if (mHeaderClockShow) updateClock();
             // End Junk
         }
     };
 
     final void updateClock() {
     	// Junk
-        setTextColor(mClockColor);
-        setTextSize(mClockSize);
+        setTextColor(mHeaderClockColor);
+        setTextSize(mHeaderClockSize);
     	// End Junk
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());

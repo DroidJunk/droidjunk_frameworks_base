@@ -16,17 +16,18 @@
 -->
 
 <LinearLayout
+    android:id="@+id/notif_header"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/notification_header_bg"
+    android:background="@drawable/junk_bg"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:baselineAligned="false"
     >
     <com.android.systemui.statusbar.policy.ClockHeader
-        android:id="@+id/clock"
+        android:id="@+id/header_clock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -34,7 +35,7 @@
         android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Clock"
         />
 
-    <com.android.systemui.statusbar.policy.DateView android:id="@+id/date"
+    <com.android.systemui.statusbar.policy.DateViewHeader android:id="@+id/header_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"

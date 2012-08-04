@@ -214,7 +214,7 @@ public class NavigationBarView extends LinearLayout {
         mShowSearchButtonLand = sp.getBoolean(SHOW_SEARCH_BUTTON_LAND, false);
         mShowTopMenuButtonLand = sp.getBoolean(SHOW_TOP_MENU_BUTTON_LAND, true);
         mShowBotMenuButtonLand = sp.getBoolean(SHOW_BOT_MENU_BUTTON_LAND, true);
-        getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .5f, .0f));
+        getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .45f, .0f));
         
         IntentFilter filter = new IntentFilter();
         filter.addAction(Junk_NavBar_Settings);
@@ -419,7 +419,7 @@ public class NavigationBarView extends LinearLayout {
         setDisabledFlags(mDisabledFlags, true /* force */);
         setMenuVisibility(mShowMenu, true /* force */);
         // Junk
-        getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .5f, .0f));
+        getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .45f, .0f));
         // End Junk
 
         if (DEBUG_DEADZONE) {
