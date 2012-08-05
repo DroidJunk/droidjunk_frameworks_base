@@ -69,6 +69,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -111,38 +112,22 @@ public class PhoneStatusBar extends BaseStatusBar {
 	private final String Junk_Pulldown_Settings = "JUNK_PULLDOWN_SETTINGS";
 	private final String ICON_COLOR = "icon_color";
 	private final String HEADER_BAR_COLOR = "header_bar_color";
-	private final String HEADER_CLOCK_SHOW = "header_clock_show";
-	private final String HEADER_CLOCK_SIZE = "header_clock_size";
-	private final String HEADER_CLOCK_COLOR = "header_clock_color";
-	private final String HEADER_DATE_SHOW = "header_date_show";
-	private final String HEADER_DATE_SIZE = "header_date_size";
-	private final String HEADER_DATE_COLOR = "header_date_color";
-	private final String CLEAR_BUTTON_COLOR = "clear_button_color";
-	private final String CLEAR_BUTTON_TEXT_COLOR = "clear_button_text_color";
+	private final String HEADER_BUTTON_COLOR = "header_button_color";
 	private final String PD_HANDLE_COLOR = "pd_handle_color";
 	private final String PD_SHADE_COLOR = "pd_shade_color";
-	private final String PD_CARRIER_FRAME_COLOR = "pd_carrier_frame_color";
-	private final String PD_GRIP_COLOR = "pd_grip_color";
 	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
 
 	private SharedPreferences sp;  
     private int mIconColor = 0xff3fa2c7;
-    private int mClearButtonColor = 0xff1a4554;
-    private int mClearButtonTextColor = 0xffffffff;
+    private int mHeaderButtonColor = 0xffffffff;
     private int mHandleColor = 0xd7000000;
     private int mShadeColor = 0xbd000000;
-    private int mGripColor = 0xff3792b4;
-    private int mCarrierFrameColor = 0xd3000000;
     private int mNotifTextBgColor = 0xff2782a3;
     private LinearLayout mClockCenter;
     private int mHeaderBarColor = 0xff000000;
-    private ClockHeader mHeaderClock;
 	View mHeaderBar;    
-    View mHandle;
-    View mShadeView;
-    View mGripView;
-    View mCarrierFrameView;
-    private View mJunkSettingsButton;
+    View mCloseHandle;
+    View mJunkSettingsButton;
     // End Junk
     
     
@@ -371,28 +356,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     protected PhoneStatusBarView makeStatusBarView() {
         final Context context = mContext;
 
-        // Junk
-  		Context settingsContext = mContext;
-		try {
-			settingsContext = mContext.createPackageContext("com.android.settings",0);
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
-   		mIconColor = sp.getInt(ICON_COLOR, mIconColor);
-   		mHeaderBarColor = sp.getInt(HEADER_BAR_COLOR, mHeaderBarColor);
-   		mHandleColor = sp.getInt(PD_HANDLE_COLOR, mHandleColor);
-   		mClearButtonColor = sp.getInt(CLEAR_BUTTON_COLOR, mClearButtonColor);
-   		mClearButtonTextColor = sp.getInt(CLEAR_BUTTON_TEXT_COLOR, mClearButtonTextColor);
-   		mShadeColor = sp.getInt(PD_SHADE_COLOR, mShadeColor);
-   		mGripColor = sp.getInt(PD_GRIP_COLOR, mGripColor);
-   		mCarrierFrameColor = sp.getInt(PD_CARRIER_FRAME_COLOR, mCarrierFrameColor);
-   		mNotifTextBgColor = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
-   		// End Junk        
-        
-        
         Resources res = context.getResources();
 
         updateDisplaySize(); // populates mDisplayMetrics
@@ -499,14 +462,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mScrollView = (ScrollView)mStatusBarWindow.findViewById(R.id.scroll);
         mScrollView.setVerticalScrollBarEnabled(false); // less drawing during pulldowns
 
-        // Junk
-        mClockCenter = (LinearLayout)mStatusBarWindow.findViewById(R.id.clock_center);
-        mJunkSettingsButton = mStatusBarWindow.findViewById(R.id.junk_settings_button);
-        mJunkSettingsButton.setOnClickListener(mJunkSettingsButtonListener);
-        mHeaderBar = (LinearLayout)mStatusBarWindow.findViewById(R.id.notif_header);
-        mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mHeaderBarColor, .5f));
-        // End Junk        
-        
         mTicker = new MyTicker(context, mStatusBarView);
 
         TickerView tickerView = (TickerView)mStatusBarView.findViewById(R.id.tickerText);
@@ -518,6 +473,37 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
+        // Junk
+  		Context settingsContext = mContext;
+		try {
+			settingsContext = mContext.createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+   		mIconColor = sp.getInt(ICON_COLOR, mIconColor);
+   		mHeaderBarColor = sp.getInt(HEADER_BAR_COLOR, mHeaderBarColor);
+   		mHandleColor = sp.getInt(PD_HANDLE_COLOR, mHandleColor);
+   		mHeaderButtonColor = sp.getInt(HEADER_BUTTON_COLOR, mHeaderButtonColor);
+   		mShadeColor = sp.getInt(PD_SHADE_COLOR, mShadeColor);
+   		mNotifTextBgColor = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
+
+        mNotificationPanel.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mShadeColor, .5f, 0f));
+        mCloseHandle = mNotificationPanel.findViewById(R.id.close_handle);
+        ((ImageView) mCloseHandle).setColorFilter(ColorFilterMaker.changeColorAlpha(mHandleColor, .5f, 0f));
+        mClockCenter = (LinearLayout)mStatusBarWindow.findViewById(R.id.clock_center);
+        mJunkSettingsButton = mStatusBarWindow.findViewById(R.id.junk_settings_button);
+        mJunkSettingsButton.setOnClickListener(mJunkSettingsButtonListener);
+        ((ImageView) mJunkSettingsButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
+        ((ImageView) mSettingsButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
+        ((ImageView) mClearButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
+        mHeaderBar = (LinearLayout)mStatusBarWindow.findViewById(R.id.notif_header);
+        mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderBarColor, .5f, 0f));
+        // End Junk            
+        
+        
         // set the inital view visibility
         setAreThereNotifications();
 
@@ -2368,23 +2354,18 @@ public class PhoneStatusBar extends BaseStatusBar {
             }
 
             if (action.equals(Junk_Pulldown_Settings)) {
-            	mClearButtonColor = intent.getIntExtra(CLEAR_BUTTON_COLOR, mClearButtonColor);
-            	mClearButtonTextColor = intent.getIntExtra(CLEAR_BUTTON_TEXT_COLOR, mClearButtonTextColor);
+            	mHeaderButtonColor = intent.getIntExtra(HEADER_BUTTON_COLOR, mHeaderButtonColor);
             	mHeaderBarColor = intent.getIntExtra(HEADER_BAR_COLOR, mHeaderBarColor);
             	mHandleColor = intent.getIntExtra(PD_HANDLE_COLOR, mHandleColor);
             	mShadeColor = intent.getIntExtra(PD_SHADE_COLOR, mShadeColor);
-            	mGripColor = intent.getIntExtra(PD_GRIP_COLOR, mGripColor);
-            	mCarrierFrameColor = intent.getIntExtra(PD_CARRIER_FRAME_COLOR, mCarrierFrameColor);
             	mNotifTextBgColor = intent.getIntExtra(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
             	
-            	mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mHeaderBarColor, .5f));
-                //mShadeView.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mShadeColor, .5f));
-                //mHandle.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mHandleColor, .5f));
-                //mGripView.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mGripColor, .5f));
-                //mCarrierFrameView.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mCarrierFrameColor, .5f));
-        		//mClearButton.setTextColor(mClearButtonTextColor);
-                //mClearButton.getBackground().setColorFilter(ColorFilterMaker.changeBWColor(mClearButtonColor, .35f));
-           		
+            	mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderBarColor, .5f, 0f));
+            	mNotificationPanel.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mShadeColor, .5f, 0f));
+            	((ImageView) mCloseHandle).setColorFilter(ColorFilterMaker.changeColorAlpha(mHandleColor, .5f, 0f));
+                ((ImageView) mJunkSettingsButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
+                ((ImageView) mSettingsButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
+                ((ImageView) mClearButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
             }    
             // End Junk
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
