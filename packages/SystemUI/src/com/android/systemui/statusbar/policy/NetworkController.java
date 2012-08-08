@@ -977,6 +977,7 @@ public class NetworkController extends BroadcastReceiver {
         String wifiLabel = "";
         String mobileLabel = "";
         int N;
+        final boolean emergencyOnly = (mServiceState != null && mServiceState.isEmergencyOnly());
 
         if (!mHasMobileDataFeature) {
             mDataSignalIconId = mPhoneSignalIconId = 0;
@@ -992,10 +993,12 @@ public class NetworkController extends BroadcastReceiver {
 
             if (mDataConnected) {
                 mobileLabel = mNetworkName;
-            } else if (mConnected) {
-                if (hasService()) {
+            } else if (mConnected || emergencyOnly) {
+                if (hasService() || emergencyOnly) {
+                    // The isEmergencyOnly test covers the case of a phone with no SIM
                     mobileLabel = mNetworkName;
                 } else {
+                    // Tablets, basically
                     mobileLabel = "";
                 }
             } else {
