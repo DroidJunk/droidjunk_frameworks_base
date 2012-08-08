@@ -530,7 +530,7 @@ public class JunkQuietTimeService {
      	i.putExtra("QuietTimeSoundOn", TurnOffSound);
      	i.putExtra("QuietTimeVibrateOn", TurnOffVibrate);
      	myContext.sendBroadcast(i);
-     	i = null;  
+     	i = null;
     }
     
 }

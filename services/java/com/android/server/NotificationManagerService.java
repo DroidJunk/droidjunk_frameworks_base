@@ -160,14 +160,14 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     
     // Junk
-    private final String Junk_QuietTime_Settings_Changed = "JUNK_QUIET_TIME_SETTINGS";
+    private final String Junk_QuietTime_Settings_Changed = "JUNK_QUIET_TIME_SETTINGS_CHANGED";
 	private boolean inQuietTime = false;
     private boolean mTurnOffLed = false;
     private boolean mTurnOffVibrate = false;
     private boolean mTurnOffSound = false;
 	
 	private boolean mDefaultLedColorOn;
-    private final String Junk_Led_Settings_Changed = "JUNK_LED_SETTINGS";
+    private final String Junk_Led_Settings = "JUNK_LED_SETTINGS";
 	private final String DEFAULT_LED_COLOR_ON = "default_led_color_on";	
 	private final String DEFAULT_LED_COLOR = "default_led_color";	
 	private final String DEFAULT_LED_ON_MS = "default_led_on_ms";
@@ -468,7 +468,8 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         public void onPanelRevealed() {
             synchronized (mNotificationList) {
-                // sound
+            	//Junk
+/*                // sound
                 mSoundNotification = null;
 
                 long identity = Binder.clearCallingIdentity();
@@ -494,7 +495,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                 // light
                 mLights.clear();
                 mLedNotification = null;
-                updateLightsLocked();
+                updateLightsLocked();*/
+                // End Junk
             }
         }
 
@@ -575,7 +577,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             	mTurnOffLed = intent.getBooleanExtra("QuietTimeLedOn", mTurnOffLed);
             	mTurnOffSound = intent.getBooleanExtra("QuietTimeSoundOn", mTurnOffSound);
             	mTurnOffVibrate = intent.getBooleanExtra("QuietTimeVibrateOn", mTurnOffVibrate);
-            }  else if (action.equals(Junk_Led_Settings_Changed)) {
+            }  else if (action.equals(Junk_Led_Settings)) {
             	mDefaultLedColorOn = intent.getBooleanExtra(DEFAULT_LED_COLOR_ON, mDefaultLedColorOn);
             	mDefNotifColor = intent.getIntExtra(DEFAULT_LED_COLOR, mDefNotifColor);
             	mDefNotifLedOn = intent.getIntExtra(DEFAULT_LED_ON_MS, mDefNotifLedOn);
@@ -655,7 +657,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         filter.addAction(Intent.ACTION_USER_PRESENT);
         // Junk
         filter.addAction(Junk_QuietTime_Settings_Changed);
-        filter.addAction(Junk_Led_Settings_Changed);
+        filter.addAction(Junk_Led_Settings);
         // End Junk
         mContext.registerReceiver(mIntentReceiver, filter);
         IntentFilter pkgFilter = new IntentFilter();
@@ -685,7 +687,6 @@ public class NotificationManagerService extends INotificationManager.Stub
     	mDefNotifLedOff = sp.getInt(DEFAULT_LED_OFF_MS, mDefNotifLedOff);
     	mUseLedScreenOn = sp.getBoolean(PULSE_LED_SCREEN_ON, mUseLedScreenOn);
         // End Junk
-        
         
         SettingsObserver observer = new SettingsObserver(mHandler);
         observer.observe();
@@ -1050,6 +1051,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                         r.statusBarKey = mStatusBar.addNotification(n);
                         if ((n.notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0) {
                             mAttentionLight.pulse();
+                            Log.e("******************************** ","Flag Set");
                         }
                     }
                     finally {
@@ -1099,7 +1101,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                     // do not play notifications if stream volume is 0
                     // (typically because ringer mode is silent).
                     // Junk
-                    if (inQuietTime & (mTurnOffSound)) {
+                    if (inQuietTime && mTurnOffSound) {
                     	//No sound
                     } else {  
                     // End Junk
@@ -1120,7 +1122,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
                 // vibrate
                 // Junk
-                if (inQuietTime & (mTurnOffVibrate)) {
+                if (inQuietTime && mTurnOffVibrate) {
                 	// No vibrate
                 } else {  
                 // End Junk
@@ -1148,17 +1150,21 @@ public class NotificationManagerService extends INotificationManager.Stub
             //Slog.i(TAG, "notification.lights="
             //        + ((old.notification.lights.flags & Notification.FLAG_SHOW_LIGHTS) != 0));
             if ((notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0) {
+            	Log.e("******************************** ","Adding Light");
                 mLights.add(r);
                 updateLightsLocked();
             } else {
                 if (old != null
                         && ((old.notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0)) {
+                	Log.e("******************************** ","Old Notif");
                     updateLightsLocked();
                 }
             }
         }
         // Junk
-   		if (inQuietTime && mTurnOffLed) mNotificationLight.turnOff();
+        mAttentionLight.pulse();
+        updateLightsLocked();
+   		//if (inQuietTime && mTurnOffLed) mNotificationLight.turnOff();
    		// End Junk
         idOut[0] = id;
     }
@@ -1374,14 +1380,18 @@ public class NotificationManagerService extends INotificationManager.Stub
     // lock on mNotificationList
     private void updateLightsLocked()
     {
+        Log.e("*********** LIGHTS LOCKED ***********","-");
+    	
         // handle notification lights
         if (mLedNotification == null) {
             // get next notification, if any
             int n = mLights.size();
             if (n > 0) {
                 mLedNotification = mLights.get(n-1);
-            }
+                Log.e("    NOTIF: ","Not Null");
+            } else Log.e("    NOTIF: ","NULL");
         }
+        
         // Junk
         if (mUseLedScreenOn) mScreenOn = false;
         // End Junk
@@ -1389,7 +1399,10 @@ public class NotificationManagerService extends INotificationManager.Stub
         // Don't flash while we are in a call or screen is on
         if (mLedNotification == null || mInCall || mScreenOn) {
             mNotificationLight.turnOff();
-        } else {
+            Log.e("    LED OFF:","Null-InCall-ScreenOn");
+            return;
+        }
+
             int ledARGB = mLedNotification.notification.ledARGB;
             int ledOnMS = mLedNotification.notification.ledOnMS;
             int ledOffMS = mLedNotification.notification.ledOffMS;
@@ -1397,12 +1410,18 @@ public class NotificationManagerService extends INotificationManager.Stub
                 // Junk
            		if (mDefaultLedColorOn) {
            			ledARGB = mDefNotifColor;
-           			ledOnMS = mDefNotifLedOn * 50;
-           			ledOffMS = mDefNotifLedOff * 50;
+           			ledOnMS = mDefNotifLedOn * 10;
+           			ledOffMS = mDefNotifLedOff * 10;
+           			Log.e("    JUNK DEF:",String.valueOf(ledARGB));
+           			Log.e("    JUNK DEF:",String.valueOf(ledOnMS));
+           			Log.e("    JUNK DEF:",String.valueOf(ledOffMS));
            		} else {
            			ledARGB = mDefaultNotificationColor;
            			ledOnMS = mDefaultNotificationLedOn;
            			ledOffMS = mDefaultNotificationLedOff;
+           			Log.e("    JB DEF:",String.valueOf(ledARGB));
+           			Log.e("    JB DEF:",String.valueOf(ledOnMS));
+           			Log.e("    JB DEF:",String.valueOf(ledOffMS));
            		}
            		// End Junk
             }
@@ -1411,11 +1430,18 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
                         ledOnMS, ledOffMS);
             }
-        }
+        
+
         // Junk
-        if (inQuietTime && mTurnOffLed) mNotificationLight.turnOff();
+        if (inQuietTime && mTurnOffLed){
+        	mNotificationLight.turnOff();
+        	Log.e("*************** QUIET TIME ***********: ","Lights Off");
+        } else {
+        	Log.e("*************** NOT QUIET TIME ***********: ","Lights ON");
+        }
         // End Junk
     }
+    
 
     // lock on mNotificationList
     private int indexOfNotificationLocked(String pkg, String tag, int id)
