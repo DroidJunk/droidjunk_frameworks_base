@@ -1162,8 +1162,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
         }
         // Junk
-        mAttentionLight.pulse();
-        updateLightsLocked();
+        //mAttentionLight.pulse();
+        //updateLightsLocked();
    		//if (inQuietTime && mTurnOffLed) mNotificationLight.turnOff();
    		// End Junk
         idOut[0] = id;
@@ -1427,6 +1427,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
             if (mNotificationPulseEnabled) {
                 // pulse repeatedly
+            	mAttentionLight.pulse();
                 mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
                         ledOnMS, ledOffMS);
             }
