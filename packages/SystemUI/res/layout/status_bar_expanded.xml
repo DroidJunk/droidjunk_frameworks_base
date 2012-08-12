@@ -28,14 +28,27 @@
     android:paddingTop="@dimen/notification_panel_padding_top"
     android:layout_marginLeft="@dimen/notification_panel_margin_left"
     >
+    
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/close_handle_height"
+        android:orientation="vertical"
+        >
 
-	<com.android.systemui.BatteryLabel
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >	
+	
+		<com.android.systemui.BatteryLabel
 		android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
 		android:layout_marginLeft="8dip"
-		android:layout_marginBottom="@dimen/close_handle_height"
-		android:layout_gravity="bottom|left|center_vertical"
+		android:layout_gravity="left|center_vertical"
 		/>       
     
     <TextView
@@ -43,8 +56,7 @@
         android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Network"
         android:layout_height="@dimen/carrier_label_height"
         android:layout_width="wrap_content"
-        android:layout_marginBottom="@dimen/close_handle_height"
-        android:layout_gravity="bottom|center|center_vertical"
+        android:layout_gravity="center|center_vertical"
         android:visibility="invisible"
         />
 
@@ -53,9 +65,16 @@
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
 		android:layout_marginRight="8dip"
-		android:layout_marginBottom="@dimen/close_handle_height"
-		android:layout_gravity="bottom|right|center_vertical"
+		android:layout_gravity="right|center_vertical"
 		/>
+	</FrameLayout>
+		
+		
+		<include layout="@layout/junk_toggles_bottom"
+    	android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />	
+	</LinearLayout>	
     
     <FrameLayout
         android:layout_width="match_parent"
@@ -91,7 +110,7 @@
         </ScrollView>
     </FrameLayout>
 
-       
+            
     
     <com.android.systemui.statusbar.phone.CloseDragHandle
         android:id="@+id/close"
@@ -100,11 +119,7 @@
         android:layout_gravity="bottom"
         android:orientation="vertical"
         >
-            <include layout="@layout/junk_toggles_bottom"
-    			android:layout_width="match_parent"
-        		android:layout_height="wrap_content"
-        		android:layout_marginBottom="@dimen/close_handle_height"
-        		/>     
+
         		
         <ImageView
             android:id="@+id/close_handle"

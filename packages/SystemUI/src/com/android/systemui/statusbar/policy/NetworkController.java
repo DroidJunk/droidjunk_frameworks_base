@@ -144,6 +144,12 @@ public class NetworkController extends BroadcastReceiver {
 
     private boolean mAirplaneMode = false;
     private boolean mLastAirplaneMode = true;
+    
+    // Junk
+    private final String Junk_Custom_Carrier  = "JUNK_CUSTOM_CARRIER";
+    public static boolean showCustomName = false;
+    public static String CustomName = "- J U N K -";
+    // End Junk
 
     // our ui
     Context mContext;
@@ -217,7 +223,10 @@ public class NetworkController extends BroadcastReceiver {
         mNetworkNameSeparator = mContext.getString(R.string.status_bar_network_name_separator);
         mNetworkNameDefault = mContext.getString(
                 com.android.internal.R.string.lockscreen_carrier_default);
-        mNetworkName = mNetworkNameDefault;
+        //mNetworkName = mNetworkNameDefault;
+        // Junk
+        mNetworkName = showCustomName ? CustomName: mNetworkNameDefault;
+        // End Junk
 
         // wifi
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -239,6 +248,7 @@ public class NetworkController extends BroadcastReceiver {
         filter.addAction(ConnectivityManager.INET_CONDITION_ACTION);
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        filter.addAction(Junk_Custom_Carrier);
         mWimaxSupported = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_wimaxEnabled);
         if(mWimaxSupported) {
@@ -376,6 +386,8 @@ public class NetworkController extends BroadcastReceiver {
                 action.equals(WimaxManagerConstants.WIMAX_NETWORK_STATE_CHANGED_ACTION)) {
             updateWimaxState(intent);
             refreshViews();
+        } else if (action.equals(Junk_Custom_Carrier)) {
+        refreshViews();
         }
     }
 
@@ -770,9 +782,16 @@ public class NetworkController extends BroadcastReceiver {
             something = true;
         }
         if (something) {
-            mNetworkName = str.toString();
+            // Junk
+        	//mNetworkName = str.toString();
+            mNetworkName = showCustomName ? CustomName: str.toString();
+            // End Junk
+            
         } else {
             mNetworkName = mNetworkNameDefault;
+            // Junk
+            mNetworkName = showCustomName ? CustomName: mNetworkNameDefault;
+            // End Junk
         }
     }
 
@@ -978,6 +997,10 @@ public class NetworkController extends BroadcastReceiver {
         String mobileLabel = "";
         int N;
         final boolean emergencyOnly = (mServiceState != null && mServiceState.isEmergencyOnly());
+        
+        // Junk
+        mNetworkName = showCustomName ? CustomName: mNetworkNameDefault;
+        // End Junk
 
         if (!mHasMobileDataFeature) {
             mDataSignalIconId = mPhoneSignalIconId = 0;
