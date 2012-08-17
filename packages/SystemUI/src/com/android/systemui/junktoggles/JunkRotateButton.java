@@ -111,18 +111,18 @@ public class JunkRotateButton extends JunkToggleButton {
 		}
 
 	    if(rotateStatus){
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 			mIcon.setImageResource(R.drawable.junktoggle_rotate_on);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+			setTextColor(JunkToggles.mToggleTextOnColor);
 	      }else{
 			mIcon.setImageResource(R.drawable.junktoggle_rotate_off);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+			setTextColor(JunkToggles.mToggleTextOffColor);
 	      }
 
-		  mDivider.setBackgroundColor(JunkToggleViewTop.mToggleDivColor);
+		  mDivider.setBackgroundColor(JunkToggles.mToggleDivColor);
 		  
 		  if (JunkToggleButton.mShowRotate) {
 			showRotate.setVisibility(View.VISIBLE);

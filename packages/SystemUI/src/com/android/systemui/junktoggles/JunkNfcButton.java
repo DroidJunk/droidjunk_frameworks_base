@@ -90,18 +90,18 @@ public class JunkNfcButton extends JunkToggleButton {
 		
 		
 		if (mNFCAdapter.isEnabled()) {
-				mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
+				mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 				mIcon.setImageResource(R.drawable.junktoggle_nfc_on);
 				mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-				setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+				setTextColor(JunkToggles.mToggleTextOnColor);
 			} else {
 				mIcon.setImageResource(R.drawable.junktoggle_nfc_off);
 				mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-				mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-				setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+				mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+				setTextColor(JunkToggles.mToggleTextOffColor);
 		}
 		
-		mDivider.setBackgroundColor(JunkToggleViewTop.mToggleDivColor);
+		mDivider.setBackgroundColor(JunkToggles.mToggleDivColor);
 
 		if (JunkToggleButton.mShowNfc) {
 			showNfc.setVisibility(View.VISIBLE);

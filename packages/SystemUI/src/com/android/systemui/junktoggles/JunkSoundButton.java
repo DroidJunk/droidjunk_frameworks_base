@@ -76,25 +76,25 @@ public class JunkSoundButton extends JunkToggleButton {
 		
 		if (mAudioManager.getRingerMode() == mAudioManager.RINGER_MODE_NORMAL) {
 
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 			mIcon.setImageResource(R.drawable.junktoggle_sound_on);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+			setTextColor(JunkToggles.mToggleTextOnColor);
 			} else 
 				if (mAudioManager.getRingerMode() == mAudioManager.RINGER_MODE_VIBRATE) {
-				mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
+				mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
 				mIcon.setImageResource(R.drawable.junktoggle_sound_off_vibrate);
 				mIcon.setColorFilter(JunkToggleButton.mToggleIconInterColor);
-				setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+				setTextColor(JunkToggles.mToggleTextOffColor);
 
 			} else {
 				mIcon.setImageResource(R.drawable.junktoggle_sound_off);
 				mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-				mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-				setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+				mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+				setTextColor(JunkToggles.mToggleTextOffColor);
 		}
 
-		mDivider.setBackgroundColor(JunkToggleViewTop.mToggleDivColor);
+		mDivider.setBackgroundColor(JunkToggles.mToggleDivColor);
 		
 		if (JunkToggleButton.mShowSound) {
 			showSound.setVisibility(View.VISIBLE);

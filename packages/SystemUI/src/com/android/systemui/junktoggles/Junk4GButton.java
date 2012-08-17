@@ -88,18 +88,18 @@ public class Junk4GButton extends JunkToggleButton {
 		mIcon.clearColorFilter();
 
 		if ((Settings.Secure.getInt(getContext().getContentResolver(), Settings.Secure.PREFERRED_NETWORK_MODE, 4) == 7)) {
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 			mIcon.setImageResource(R.drawable.junktoggle_fourg_on);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+			setTextColor(JunkToggles.mToggleTextOnColor);
 		} else {
 			mIcon.setImageResource(R.drawable.junktoggle_fourg_off);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+			setTextColor(JunkToggles.mToggleTextOffColor);
 		}
 		
-		mDivider.setBackgroundColor(JunkToggleViewTop.mToggleDivColor);
+		mDivider.setBackgroundColor(JunkToggles.mToggleDivColor);
 
 		if (JunkToggleButton.mShowFourg) {
 			showFourg.setVisibility(View.VISIBLE);

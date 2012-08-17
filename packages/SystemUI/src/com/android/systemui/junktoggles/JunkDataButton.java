@@ -101,16 +101,16 @@ public class JunkDataButton extends JunkToggleButton {
 		mIcon.clearColorFilter();
 
 		if (mConnectivityManager.getMobileDataEnabled()) {
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 			mIcon.setImageResource(R.drawable.junktoggle_data_on);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+			setTextColor(JunkToggles.mToggleTextOnColor);
 
 		} else {
 			mIcon.setImageResource(R.drawable.junktoggle_data_off);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+			setTextColor(JunkToggles.mToggleTextOffColor);
 		}
 
 		if (JunkToggleButton.mShowData) {

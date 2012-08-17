@@ -75,16 +75,16 @@ public class JunkWifiButton extends JunkToggleButton {
 		mIcon.clearColorFilter();
 		
 		if (mWifiManager.isWifiEnabled()) {
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 			mIcon.setImageResource(R.drawable.junktoggle_wifi_on);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+			setTextColor(JunkToggles.mToggleTextOnColor);
 
 		} else {
 			mIcon.setImageResource(R.drawable.junktoggle_wifi_off);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+			setTextColor(JunkToggles.mToggleTextOffColor);
 		}
 		
 		if (JunkToggleButton.mShowWifi) {
@@ -93,7 +93,7 @@ public class JunkWifiButton extends JunkToggleButton {
 			showWifi.setVisibility(View.GONE);
 		}
 
-		mDivider.setBackgroundColor(JunkToggleViewTop.mToggleDivColor);
+		mDivider.setBackgroundColor(JunkToggles.mToggleDivColor);
 	}
 
 

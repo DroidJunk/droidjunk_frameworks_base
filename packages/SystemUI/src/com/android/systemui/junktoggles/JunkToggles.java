@@ -1,5 +1,7 @@
 package com.android.systemui.junktoggles;
 
+import com.android.systemui.R;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,12 +9,14 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 
 
-public class JunkToggleViewTop extends LinearLayout {
+public class JunkToggles extends LinearLayout {
 
 	private final String Junk_Toggle_Settings = "JUNK_TOGGLE_SETTINGS";
 	private final String TOGGLES_ON = "toggles_show_toggles";
@@ -38,7 +42,7 @@ public class JunkToggleViewTop extends LinearLayout {
     public static int mToggleTextOffColor = 0xff555555;   
     public static boolean mShowToggleDiv = true;
     public static int mToggleDivColor = 0xff2c2c2c;   
-    public JunkToggleViewTop(Context context, AttributeSet attrs) {
+    public JunkToggles(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
@@ -135,12 +139,24 @@ public class JunkToggleViewTop extends LinearLayout {
  
     private void updateView(){
 
+		FrameLayout.LayoutParams
+		params = (FrameLayout.LayoutParams)getLayoutParams();
+
     	if (!mTogglesOn) {
     		setVisibility(View.GONE);
     	} else if (mTogglesTop) {
     		setVisibility(View.VISIBLE);
+    		params.gravity = Gravity.TOP;
+    		params.bottomMargin = 0;
+    		params.topMargin = 100;
+    		setLayoutParams(params);
     		} else {
-    			setVisibility(View.GONE);
+    			setVisibility(View.VISIBLE);
+    			params.gravity=Gravity.BOTTOM;
+    			params.bottomMargin = (int) getResources().getDimension(R.dimen.close_handle_height);
+    			params.topMargin = 0;
+        		setLayoutParams(params);
+
     		}
     	
     	

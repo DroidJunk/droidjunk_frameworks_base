@@ -75,19 +75,19 @@ public class JunkBluetoothButton extends JunkToggleButton {
 		mIcon.clearColorFilter();
 
 		if (mBluetoothAdaper.isEnabled()) {
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 			mIcon.setImageResource(R.drawable.junktoggle_bluetooth_on);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+			setTextColor(JunkToggles.mToggleTextOnColor);
 
 		} else {
 			mIcon.setImageResource(R.drawable.junktoggle_bluetooth_off);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+			setTextColor(JunkToggles.mToggleTextOffColor);
 		}
 
-		mDivider.setBackgroundColor(JunkToggleViewTop.mToggleDivColor);
+		mDivider.setBackgroundColor(JunkToggles.mToggleDivColor);
 
 		if (JunkToggleButton.mShowBluetooth) {
 			showBluetooth.setVisibility(View.VISIBLE);

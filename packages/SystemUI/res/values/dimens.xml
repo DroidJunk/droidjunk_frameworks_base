@@ -134,9 +134,17 @@
     <!-- Height of the notification panel header bar -->
     <dimen name="notification_panel_header_height">48dp</dimen>
     
+    <!-- JUNK -->
     <!-- Height of the notification panel header bar & toggles-->
-    <dimen name="notification_panel_and_toggle_height">100dp</dimen>
-
+    <dimen name="junk_notif_panel_toggle_height">104dp</dimen>
+    <!-- Height of the close handle & toggles-->
+    <dimen name="junk_toggle_close_handle_height">88dp</dimen>
+    <!-- Height of the toggles-->
+    <dimen name="junk_toggle_height">52dp</dimen>
+    
+    
+	<!-- END JUNK -->
+	
     <!-- Extra space above the panel -->
     <dimen name="notification_panel_padding_top">0dp</dimen>
 

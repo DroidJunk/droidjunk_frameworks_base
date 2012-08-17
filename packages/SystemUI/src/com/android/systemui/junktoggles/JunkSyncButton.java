@@ -99,17 +99,17 @@ public class JunkSyncButton extends JunkToggleButton {
 		if (ContentResolver.getMasterSyncAutomatically()) {
 			mIcon.setImageResource(R.drawable.junktoggle_sync_on);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOnColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOnColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
+			setTextColor(JunkToggles.mToggleTextOnColor);
 
 		} else {
 			mIcon.setImageResource(R.drawable.junktoggle_sync_off);
 			mIcon.setColorFilter(JunkToggleButton.mToggleIconOffColor);
-			mIndicator.setBackgroundColor(JunkToggleViewTop.mToggleIndOffColor);
-			setTextColor(JunkToggleViewTop.mToggleTextOffColor);
+			mIndicator.setBackgroundColor(JunkToggles.mToggleIndOffColor);
+			setTextColor(JunkToggles.mToggleTextOffColor);
 		}
 
-		mDivider.setBackgroundColor(JunkToggleViewTop.mToggleDivColor);
+		mDivider.setBackgroundColor(JunkToggles.mToggleDivColor);
 		
 		if (JunkToggleButton.mShowSync) {
 			showSync.setVisibility(View.VISIBLE);

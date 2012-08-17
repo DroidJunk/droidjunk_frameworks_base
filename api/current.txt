@@ -935,6 +935,7 @@ package android {
     field public static final int summaryColumn = 16843426; // 0x10102a2
     field public static final int summaryOff = 16843248; // 0x10101f0
     field public static final int summaryOn = 16843247; // 0x10101ef
+    field public static final int supportsRtl = 16843737; // 0x10103d9
     field public static final int supportsUploading = 16843419; // 0x101029b
     field public static final int switchMinWidth = 16843632; // 0x1010370
     field public static final int switchPadding = 16843633; // 0x1010371

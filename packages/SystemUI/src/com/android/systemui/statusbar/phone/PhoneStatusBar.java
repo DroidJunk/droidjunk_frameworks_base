@@ -125,6 +125,11 @@ public class PhoneStatusBar extends BaseStatusBar {
 	private final String CARRIER_CUSTOM = "carrier_custom";
 	private final String CARRIER_CUSTOM_TEXT = "carrier_custom_text";
 	private final String CARRIER_SIZE = "carrier_size";
+	
+	private final String Junk_Toggle_Settings = "JUNK_TOGGLE_SETTINGS";	
+	private final String TOGGLES_TOP = "toggles_top";
+	private final String TOGGLES_ON = "toggles_show_toggles";
+	
     private boolean mShowCarrier = true;
     private int mCarrierColor = 0xff33b5e5;
     private boolean mCustomCarrier = false;
@@ -132,6 +137,8 @@ public class PhoneStatusBar extends BaseStatusBar {
     private int mCarrierSize = 15;
 	
 	private SharedPreferences sp;  
+	private boolean mTogglesShow = true;
+	private boolean mTogglesTop = true;
     private int mIconColor = 0xff3fa2c7;
     private int mHeaderButtonColor = 0xffffffff;
     private int mHandleColor = 0xd7000000;
@@ -143,6 +150,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     View mCloseHandle;
     View mJunkSettingsButton;
     View mBottomBar;
+    View mToggles;
     // End Junk
     
     
@@ -499,6 +507,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
 		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
    		mIconColor = sp.getInt(ICON_COLOR, mIconColor);
+   		mTogglesTop = sp.getBoolean(TOGGLES_TOP, mTogglesTop);
+   		mTogglesShow = sp.getBoolean(TOGGLES_ON, mTogglesShow);
    		mHeaderBarColor = sp.getInt(HEADER_BAR_COLOR, mHeaderBarColor);
    		mHandleColor = sp.getInt(PD_HANDLE_COLOR, mHandleColor);
    		mHeaderButtonColor = sp.getInt(HEADER_BUTTON_COLOR, mHeaderButtonColor);
@@ -523,12 +533,56 @@ public class PhoneStatusBar extends BaseStatusBar {
         mHeaderBar = (LinearLayout)mStatusBarWindow.findViewById(R.id.notif_header);
         mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderBarColor, .5f, 0f));
         mBottomBar = mNotificationPanel.findViewById(R.id.bottom_bar);
+        mToggles = mNotificationPanel.findViewById(R.id.junk_toggle_view);
         mCarrierLabel.setVisibility(mShowCarrier ? View.VISIBLE : View.GONE);
         NetworkController.showCustomName = mCustomCarrier;
         NetworkController.CustomName = mCustomCarrierText;
         mCarrierLabel.setTextColor(mCarrierColor);
         mCarrierLabel.setTextSize(mCarrierSize);
         
+        
+		FrameLayout.LayoutParams
+		barParams = (FrameLayout.LayoutParams) mBottomBar.getLayoutParams();
+		FrameLayout.LayoutParams
+		scrollParams = (FrameLayout.LayoutParams) mScrollView.getLayoutParams();
+ 		// Adjust for the toggles
+    	if (mTogglesShow) {
+    		if (mTogglesTop) {
+        		barParams.bottomMargin = (int) mContext.getResources()
+    					.getDimension(R.dimen.close_handle_height);
+        		barParams.topMargin = 0;
+        		mBottomBar.setLayoutParams(barParams);
+        		
+        		scrollParams.topMargin = (int) mContext.getResources()
+    					.getDimension(R.dimen.junk_notif_panel_toggle_height);
+        		scrollParams.bottomMargin = 0;
+        		mScrollView.setLayoutParams(scrollParams);
+        	} else {
+        		barParams.bottomMargin = (int) mContext.getResources()
+    					.getDimension(R.dimen.junk_toggle_close_handle_height);
+        		barParams.topMargin = 0;
+        		mBottomBar.setLayoutParams(barParams);
+        		
+        		scrollParams.topMargin = (int) mContext.getResources()
+    					.getDimension(R.dimen.notification_panel_header_height);
+        		scrollParams.bottomMargin = 0;
+        		mScrollView.setLayoutParams(scrollParams);
+        	}
+    	} else {
+    		barParams.bottomMargin = (int) mContext.getResources()
+					.getDimension(R.dimen.close_handle_height);
+    		barParams.topMargin = 0;
+    		mBottomBar.setLayoutParams(barParams);
+    		
+    		scrollParams.topMargin = (int) mContext.getResources()
+					.getDimension(R.dimen.notification_panel_header_height);
+    		scrollParams.bottomMargin = 0;
+    		mScrollView.setLayoutParams(scrollParams);
+    		
+    	}
+
+    	barParams = null;
+    	scrollParams = null;
         // End Junk            
         
         
@@ -572,6 +626,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         filter.addAction(Junk_Icon_Settings);
         filter.addAction(Junk_NavBar_Settings);
         filter.addAction(Junk_Pulldown_Settings);
+        filter.addAction(Junk_Toggle_Settings);
         // End Junk
         context.registerReceiver(mBroadcastReceiver, filter);
 
@@ -1004,17 +1059,27 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     protected void updateCarrierLabelVisibility(boolean force) {
-        if (!SHOW_CARRIER_LABEL) return;
+        // Junk
+    	//if (!SHOW_CARRIER_LABEL) return;
+        // End Junk
+    	
         // The idea here is to only show the carrier label when there is enough room to see it, 
         // i.e. when there aren't enough notifications to fill the panel.
         if (DEBUG) {
             Slog.d(TAG, String.format("pileh=%d scrollh=%d carrierh=%d",
                     mPile.getHeight(), mScrollView.getHeight(), mCarrierLabelHeight));
         }
+        // Junk - lots of changes below
+        if (mTogglesShow && mTogglesTop) mToggles.setVisibility(View.VISIBLE);
         
-        final boolean makeVisible = 
-            mPile.getHeight() < (mScrollView.getHeight() - mCarrierLabelHeight);
-        
+        boolean makeVisible = true;
+        if (mTogglesShow && !mTogglesTop) {
+        	makeVisible = 
+        			mPile.getHeight() < (mScrollView.getHeight() - (mCarrierLabelHeight + 64));
+        } else {
+        	makeVisible = 
+        			mPile.getHeight() < (mScrollView.getHeight() - mCarrierLabelHeight);
+        }
         if (force || mCarrierLabelVisible != makeVisible) {
             mCarrierLabelVisible = makeVisible;
             if (DEBUG) {
@@ -1025,10 +1090,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                 mCarrierLabel.setVisibility(View.VISIBLE);
                 // Junk
                 mBottomBar.setVisibility(View.VISIBLE);
-                // End Junk
+                mToggles.setVisibility(View.VISIBLE);
+                // End Junk            
             }
-            
-            
             mCarrierLabel.animate()
                 .alpha(makeVisible ? 1f : 0f)
                 //.setStartDelay(makeVisible ? 500 : 0)
@@ -1045,11 +1109,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                 })
                 .start();
             
-            
+            // Junk
             mBottomBar.animate()
             .alpha(makeVisible ? 1f : 0f)
-            //.setStartDelay(makeVisible ? 500 : 0)
-            //.setDuration(makeVisible ? 750 : 100)
             .setDuration(150)
             .setListener(makeVisible ? null : new AnimatorListenerAdapter() {
                 @Override
@@ -1061,6 +1123,23 @@ public class PhoneStatusBar extends BaseStatusBar {
                 }
             })
             .start();
+            
+            if (!mTogglesTop) {
+            	mToggles.animate()
+            	.alpha(makeVisible ? 1f : 0f)
+            	.setDuration(450)
+            	.setListener(makeVisible ? null : new AnimatorListenerAdapter() {
+            		@Override
+            		public void onAnimationEnd(Animator animation) {
+            			if (!mTogglesShow) { // race
+            				mToggles.setVisibility(View.INVISIBLE);
+            				mToggles.setAlpha(0f);
+            			}
+            		}
+            	})
+            	.start();
+            }
+            // End Junk
         }
     }
 
@@ -2403,6 +2482,53 @@ public class PhoneStatusBar extends BaseStatusBar {
             	mStatusIcons.invalidate();
             }
 
+            if (action.equals(Junk_Toggle_Settings)) {
+            	mTogglesTop = intent.getBooleanExtra(TOGGLES_TOP, mTogglesTop);
+            	
+        		FrameLayout.LayoutParams
+        		barParams = (FrameLayout.LayoutParams) mBottomBar.getLayoutParams();
+        		FrameLayout.LayoutParams
+        		scrollParams = (FrameLayout.LayoutParams) mScrollView.getLayoutParams();
+         		// Adjust for the toggles
+            	if (mTogglesShow) {
+            		if (mTogglesTop) {
+                		barParams.bottomMargin = (int) mContext.getResources()
+            					.getDimension(R.dimen.close_handle_height);
+                		barParams.topMargin = 0;
+                		mBottomBar.setLayoutParams(barParams);
+                		
+                		scrollParams.topMargin = (int) mContext.getResources()
+            					.getDimension(R.dimen.junk_notif_panel_toggle_height);
+                		scrollParams.bottomMargin = 0;
+                		mScrollView.setLayoutParams(scrollParams);
+                	} else {
+                		barParams.bottomMargin = (int) mContext.getResources()
+            					.getDimension(R.dimen.junk_toggle_close_handle_height);
+                		barParams.topMargin = 0;
+                		mBottomBar.setLayoutParams(barParams);
+                		
+                		scrollParams.topMargin = (int) mContext.getResources()
+            					.getDimension(R.dimen.notification_panel_header_height);
+                		scrollParams.bottomMargin = 0;
+                		mScrollView.setLayoutParams(scrollParams);
+                	}
+            	} else {
+            		barParams.bottomMargin = (int) mContext.getResources()
+        					.getDimension(R.dimen.close_handle_height);
+            		barParams.topMargin = 0;
+            		mBottomBar.setLayoutParams(barParams);
+            		
+            		scrollParams.topMargin = (int) mContext.getResources()
+        					.getDimension(R.dimen.notification_panel_header_height);
+            		scrollParams.bottomMargin = 0;
+            		mScrollView.setLayoutParams(scrollParams);
+            		
+            	}
+
+            	barParams = null;
+            	scrollParams = null;
+            }
+            
             if (action.equals(Junk_Pulldown_Settings)) {
             	mHeaderButtonColor = intent.getIntExtra(HEADER_BUTTON_COLOR, mHeaderButtonColor);
             	mHeaderBarColor = intent.getIntExtra(HEADER_BAR_COLOR, mHeaderBarColor);
