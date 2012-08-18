@@ -134,16 +134,6 @@
     <!-- Height of the notification panel header bar -->
     <dimen name="notification_panel_header_height">48dp</dimen>
     
-    <!-- JUNK -->
-    <!-- Height of the notification panel header bar & toggles-->
-    <dimen name="junk_notif_panel_toggle_height">104dp</dimen>
-    <!-- Height of the close handle & toggles-->
-    <dimen name="junk_toggle_close_handle_height">88dp</dimen>
-    <!-- Height of the toggles-->
-    <dimen name="junk_toggle_height">52dp</dimen>
-    
-    
-	<!-- END JUNK -->
 	
     <!-- Extra space above the panel -->
     <dimen name="notification_panel_padding_top">0dp</dimen>
@@ -161,4 +151,19 @@
 
     <!-- Height of the carrier/wifi name label -->
     <dimen name="carrier_label_height">24dp</dimen>
+    
+    
+    <!-- JUNK -->
+
+    <!-- Height of the notification panel header bar & toggles-->
+    <dimen name="junk_toggle_top_margin">50dip</dimen>
+    <!-- Height of the close handle & toggles-->
+    <dimen name="junk_toggle_bottom_margin">24dip</dimen>
+    <!-- Margin for the pulldown scroll-->
+    <dimen name="junk_scroll_top_margin">104dip</dimen>
+    <!-- Margin for the bottom bar-->
+    <dimen name="junk_bottom_bar_margin">80dip</dimen>
+
+    <!-- END JUNK -->
+    
 </resources>

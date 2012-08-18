@@ -139,6 +139,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 	private SharedPreferences sp;  
 	private boolean mTogglesShow = true;
 	private boolean mTogglesTop = true;
+	private boolean mTogglesVisible = false;
     private int mIconColor = 0xff3fa2c7;
     private int mHeaderButtonColor = 0xffffffff;
     private int mHandleColor = 0xd7000000;
@@ -253,7 +254,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     // the tracker view
     int mTrackingPosition; // the position of the top of the tracking view.
-    private boolean mPanelSlightlyVisible;
+
 
     // ticker
     private Ticker mTicker;
@@ -554,12 +555,12 @@ public class PhoneStatusBar extends BaseStatusBar {
         		mBottomBar.setLayoutParams(barParams);
         		
         		scrollParams.topMargin = (int) mContext.getResources()
-    					.getDimension(R.dimen.junk_notif_panel_toggle_height);
+    					.getDimension(R.dimen.junk_scroll_top_margin);
         		scrollParams.bottomMargin = 0;
         		mScrollView.setLayoutParams(scrollParams);
         	} else {
         		barParams.bottomMargin = (int) mContext.getResources()
-    					.getDimension(R.dimen.junk_toggle_close_handle_height);
+    					.getDimension(R.dimen.junk_bottom_bar_margin);
         		barParams.topMargin = 0;
         		mBottomBar.setLayoutParams(barParams);
         		
@@ -1059,9 +1060,8 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     protected void updateCarrierLabelVisibility(boolean force) {
-        // Junk
-    	//if (!SHOW_CARRIER_LABEL) return;
-        // End Junk
+    	// Junk - lots of changes below
+    	if (!SHOW_CARRIER_LABEL && !mTogglesShow) return;
     	
         // The idea here is to only show the carrier label when there is enough room to see it, 
         // i.e. when there aren't enough notifications to fill the panel.
@@ -1069,35 +1069,40 @@ public class PhoneStatusBar extends BaseStatusBar {
             Slog.d(TAG, String.format("pileh=%d scrollh=%d carrierh=%d",
                     mPile.getHeight(), mScrollView.getHeight(), mCarrierLabelHeight));
         }
-        // Junk - lots of changes below
-        if (mTogglesShow && mTogglesTop) mToggles.setVisibility(View.VISIBLE);
+
+        
+        boolean makeTogglesVisible = true;
+        if (!mTogglesTop) {
+        	makeTogglesVisible = 
+        			mPile.getHeight() < (mScrollView.getHeight() - (mCarrierLabelHeight + 58));
+        } else {
+        	makeTogglesVisible = mTrackingPosition > 246;
+        }
+
+        Log.e("**************************",String.valueOf(mTrackingPosition));
+        Log.e("**************************",String.valueOf((int) mContext.getResources().getDimension(R.dimen.notification_panel_header_height)));
         
         boolean makeVisible = true;
-        if (mTogglesShow && !mTogglesTop) {
-        	makeVisible = 
-        			mPile.getHeight() < (mScrollView.getHeight() - (mCarrierLabelHeight + 64));
-        } else {
-        	makeVisible = 
-        			mPile.getHeight() < (mScrollView.getHeight() - mCarrierLabelHeight);
-        }
+        makeVisible = 
+                mPile.getHeight() < (mScrollView.getHeight() - mCarrierLabelHeight);
+        
         if (force || mCarrierLabelVisible != makeVisible) {
             mCarrierLabelVisible = makeVisible;
             if (DEBUG) {
                 Slog.d(TAG, "making carrier label " + (makeVisible?"visible":"invisible"));
             }
+            
             mCarrierLabel.animate().cancel();
             if (makeVisible) {
                 mCarrierLabel.setVisibility(View.VISIBLE);
-                // Junk
                 mBottomBar.setVisibility(View.VISIBLE);
-                mToggles.setVisibility(View.VISIBLE);
-                // End Junk            
             }
+
+
+            
             mCarrierLabel.animate()
                 .alpha(makeVisible ? 1f : 0f)
-                //.setStartDelay(makeVisible ? 500 : 0)
-                //.setDuration(makeVisible ? 750 : 100)
-                .setDuration(150)
+                .setDuration(100)
                 .setListener(makeVisible ? null : new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -1108,11 +1113,11 @@ public class PhoneStatusBar extends BaseStatusBar {
                     }
                 })
                 .start();
-            
-            // Junk
+
+        
             mBottomBar.animate()
             .alpha(makeVisible ? 1f : 0f)
-            .setDuration(150)
+            .setDuration(100)
             .setListener(makeVisible ? null : new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -1123,15 +1128,24 @@ public class PhoneStatusBar extends BaseStatusBar {
                 }
             })
             .start();
-            
-            if (!mTogglesTop) {
+        }
+        
+            if (force || mTogglesVisible != makeTogglesVisible) {
+            	mTogglesVisible = makeTogglesVisible;
+            	
+            	mToggles.animate().cancel();
+            	if (makeTogglesVisible) {
+                    mToggles.setVisibility(View.VISIBLE);
+                }            
+                
+            mToggles.animate().cancel();            
             	mToggles.animate()
-            	.alpha(makeVisible ? 1f : 0f)
-            	.setDuration(450)
-            	.setListener(makeVisible ? null : new AnimatorListenerAdapter() {
+            	.alpha(makeTogglesVisible ? 1f : 0f)
+            	.setDuration(700)
+            	.setListener(makeTogglesVisible ? null : new AnimatorListenerAdapter() {
             		@Override
             		public void onAnimationEnd(Animator animation) {
-            			if (!mTogglesShow) { // race
+            			if (!mTogglesVisible) { // race
             				mToggles.setVisibility(View.INVISIBLE);
             				mToggles.setAlpha(0f);
             			}
@@ -1139,8 +1153,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             	})
             	.start();
             }
-            // End Junk
-        }
+        
     }
 
     @Override
@@ -2498,12 +2511,12 @@ public class PhoneStatusBar extends BaseStatusBar {
                 		mBottomBar.setLayoutParams(barParams);
                 		
                 		scrollParams.topMargin = (int) mContext.getResources()
-            					.getDimension(R.dimen.junk_notif_panel_toggle_height);
+            					.getDimension(R.dimen.junk_scroll_top_margin);
                 		scrollParams.bottomMargin = 0;
                 		mScrollView.setLayoutParams(scrollParams);
                 	} else {
                 		barParams.bottomMargin = (int) mContext.getResources()
-            					.getDimension(R.dimen.junk_toggle_close_handle_height);
+            					.getDimension(R.dimen.junk_bottom_bar_margin);
                 		barParams.topMargin = 0;
                 		mBottomBar.setLayoutParams(barParams);
                 		

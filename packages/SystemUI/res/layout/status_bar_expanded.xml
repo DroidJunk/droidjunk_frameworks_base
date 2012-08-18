@@ -43,7 +43,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_marginLeft="8dip"
-			android:layout_gravity="left|center_vertical"
+			android:layout_gravity="left|bottom"
 			/>       
     
    		<TextView
@@ -60,7 +60,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_marginRight="8dip"
-			android:layout_gravity="right|center_vertical"
+			android:layout_gravity="right|bottom"
 			/>
 	
 	</FrameLayout> <!-- bottom bar -->
@@ -80,13 +80,16 @@
             android:layout_height="@dimen/notification_panel_header_height"
             />
     
+ 
+        
+        
         <ScrollView
             android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fadingEdge="none"
             android:overScrollMode="ifContentScrolls"
-            android:layout_marginTop="@dimen/junk_notif_panel_toggle_height"
+            android:layout_marginTop="@dimen/junk_scroll_top_margin"
             >
     	    
             <com.android.systemui.statusbar.policy.NotificationRowLayout
@@ -95,6 +98,8 @@
                 android:layout_height="wrap_content"
                 systemui:rowHeight="@dimen/notification_row_min_height"
                 />
+            
+            
         </ScrollView>
         
     </FrameLayout>
@@ -120,13 +125,14 @@
 
     </com.android.systemui.statusbar.phone.CloseDragHandle>
     
-    <include 
+
+                <include 
         android:id="@+id/junk_toggle_view"
         layout="@layout/junk_toggles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+       	android:layout_marginTop="@dimen/junk_toggle_top_margin"
 		android:layout_gravity="top"
-        />    
-
+        /> 
     
 </FrameLayout><!-- end of sliding panel -->

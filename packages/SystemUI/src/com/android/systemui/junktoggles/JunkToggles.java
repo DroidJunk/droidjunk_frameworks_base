@@ -148,14 +148,16 @@ public class JunkToggles extends LinearLayout {
     		setVisibility(View.VISIBLE);
     		params.gravity = Gravity.TOP;
     		params.bottomMargin = 0;
-    		params.topMargin = 100;
+    		params.topMargin = (int) getResources().getDimension(R.dimen.junk_toggle_top_margin);
     		setLayoutParams(params);
+    		params = null;
     		} else {
     			setVisibility(View.VISIBLE);
     			params.gravity=Gravity.BOTTOM;
-    			params.bottomMargin = (int) getResources().getDimension(R.dimen.close_handle_height);
+    			params.bottomMargin = (int) getResources().getDimension(R.dimen.junk_toggle_bottom_margin);
     			params.topMargin = 0;
         		setLayoutParams(params);
+        		params = null;
 
     		}
     	

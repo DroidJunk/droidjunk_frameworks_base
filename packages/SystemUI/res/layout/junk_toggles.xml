@@ -26,7 +26,6 @@
 	android:orientation="horizontal" 
 	android:layout_width="wrap_content" 
 	android:layout_height="52dip" 
-	android:layout_marginTop="@dimen/notification_panel_header_height"
 	android:layout_marginBottom=".5dip" >
  
 	<HorizontalScrollView  
