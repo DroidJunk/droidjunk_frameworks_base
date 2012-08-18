@@ -65,10 +65,8 @@ public class NavigationBarView extends LinearLayout {
 	private final String Junk_NavBar_Settings = "JUNK_NAVBAR_SETTINGS";
 	private SharedPreferences sp;
 	private final String NAV_BAR_COLOR = "nav_bar_color";
-    private final String SHOW_SEARCH_BUTTON = "search_button";
 	private final String SHOW_LEFT_MENU_BUTTON = "left_menu_button";
 	private final String SHOW_RIGHT_MENU_BUTTON = "right_menu_button";
-    private final String SHOW_SEARCH_BUTTON_LAND = "search_button_land";
 	private final String SHOW_TOP_MENU_BUTTON_LAND = "top_menu_button_land";
 	private final String SHOW_BOT_MENU_BUTTON_LAND = "bottom_menu_button_land";
 	// End Junk
@@ -101,10 +99,8 @@ public class NavigationBarView extends LinearLayout {
     // Junk
     private float scale = 0; 
     private int mBarColor = 0xff000000;
-    private boolean mShowSearchButton = false;
     private boolean mShowLeftMenuButton = true;
     private boolean mShowRightMenuButton = true;
-    private boolean mShowSearchButtonLand = false;
     private boolean mShowTopMenuButtonLand = true;
     private boolean mShowBotMenuButtonLand = true;
     private int mHorizAdjust = 0;
@@ -168,6 +164,10 @@ public class NavigationBarView extends LinearLayout {
         return mCurrentView.findViewById(R.id.menu);
     }
 
+    public View getMenuButton1() {
+        return mCurrentView.findViewById(R.id.menu1);
+   }
+    
     public View getBackButton() {
         return mCurrentView.findViewById(R.id.back);
     }
@@ -206,12 +206,10 @@ public class NavigationBarView extends LinearLayout {
 			e.printStackTrace();
 		}
         
-		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
 		mBarColor = sp.getInt(NAV_BAR_COLOR, mBarColor); 
-        mShowSearchButton = sp.getBoolean(SHOW_SEARCH_BUTTON, false);
         mShowLeftMenuButton = sp.getBoolean(SHOW_LEFT_MENU_BUTTON, true);
         mShowRightMenuButton = sp.getBoolean(SHOW_RIGHT_MENU_BUTTON, true);
-        mShowSearchButtonLand = sp.getBoolean(SHOW_SEARCH_BUTTON_LAND, false);
         mShowTopMenuButtonLand = sp.getBoolean(SHOW_TOP_MENU_BUTTON_LAND, true);
         mShowBotMenuButtonLand = sp.getBoolean(SHOW_BOT_MENU_BUTTON_LAND, true);
         getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .45f, .0f));
@@ -228,10 +226,8 @@ public class NavigationBarView extends LinearLayout {
             String action = intent.getAction();
             if (action.equals(Junk_NavBar_Settings)) {
             	mBarColor = intent.getIntExtra(NAV_BAR_COLOR, mBarColor);
-            	mShowSearchButton = intent.getBooleanExtra(SHOW_SEARCH_BUTTON, mShowSearchButton);
        	   		mShowLeftMenuButton = intent.getBooleanExtra(SHOW_LEFT_MENU_BUTTON, mShowLeftMenuButton);
        	   		mShowRightMenuButton = intent.getBooleanExtra(SHOW_RIGHT_MENU_BUTTON, mShowRightMenuButton);
-           	   	mShowSearchButtonLand = intent.getBooleanExtra(SHOW_SEARCH_BUTTON_LAND, mShowSearchButtonLand);
        	   		mShowTopMenuButtonLand = intent.getBooleanExtra(SHOW_TOP_MENU_BUTTON_LAND, mShowTopMenuButtonLand);
        	   		mShowBotMenuButtonLand = intent.getBooleanExtra(SHOW_BOT_MENU_BUTTON_LAND, mShowBotMenuButtonLand);
        	   		reorient();
@@ -330,7 +326,16 @@ public class NavigationBarView extends LinearLayout {
 
         mShowMenu = show;
 
-        getMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+        //getMenuButton().setVisibility(mShowMenu ? View.VISIBLE : View.INVISIBLE);
+        // Junk
+        if (mVertical) {
+        	getMenuButton().setVisibility(mShowMenu && mShowTopMenuButtonLand ? View.VISIBLE : View.GONE);
+        	getMenuButton1().setVisibility(mShowMenu && mShowBotMenuButtonLand ? View.VISIBLE : View.GONE);
+        } else {
+        	getMenuButton1().setVisibility(mShowMenu && mShowLeftMenuButton ? View.VISIBLE : View.GONE);
+        	getMenuButton().setVisibility(mShowMenu && mShowRightMenuButton ? View.VISIBLE : View.GONE);
+        }
+        // End Junk
     }
 
     public void setLowProfile(final boolean lightsOut) {
