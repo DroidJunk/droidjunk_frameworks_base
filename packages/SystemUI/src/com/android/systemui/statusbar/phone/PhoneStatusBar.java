@@ -1079,9 +1079,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         	makeTogglesVisible = mTrackingPosition > 246;
         }
 
-        Log.e("**************************",String.valueOf(mTrackingPosition));
-        Log.e("**************************",String.valueOf((int) mContext.getResources().getDimension(R.dimen.notification_panel_header_height)));
-        
         boolean makeVisible = true;
         makeVisible = 
                 mPile.getHeight() < (mScrollView.getHeight() - mCarrierLabelHeight);
@@ -1097,8 +1094,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 mCarrierLabel.setVisibility(View.VISIBLE);
                 mBottomBar.setVisibility(View.VISIBLE);
             }
-
-
             
             mCarrierLabel.animate()
                 .alpha(makeVisible ? 1f : 0f)
@@ -1130,13 +1125,13 @@ public class PhoneStatusBar extends BaseStatusBar {
             .start();
         }
         
-            if (force || mTogglesVisible != makeTogglesVisible) {
-            	mTogglesVisible = makeTogglesVisible;
+        if (force || mTogglesVisible != makeTogglesVisible) {
+        	mTogglesVisible = makeTogglesVisible;
             	
-            	mToggles.animate().cancel();
-            	if (makeTogglesVisible) {
-                    mToggles.setVisibility(View.VISIBLE);
-                }            
+        	mToggles.animate().cancel();
+            if (makeTogglesVisible) {
+            	mToggles.setVisibility(View.VISIBLE);
+            }            
                 
             mToggles.animate().cancel();            
             	mToggles.animate()
