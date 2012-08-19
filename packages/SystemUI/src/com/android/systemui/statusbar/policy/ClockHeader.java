@@ -69,7 +69,7 @@ public class ClockHeader extends TextView {
 	private SharedPreferences sp;
     private boolean mHeaderClockShow = true;
     private int mHeaderClockColor = 0xffffffff;
-    private int mHeaderClockSize = 27;    
+    private int mHeaderClockSize = 22;    
     // End Junk
     
     public ClockHeader(Context context) {

@@ -48,7 +48,7 @@ public final class DateViewHeader extends TextView {
 	private SharedPreferences sp;
 	private boolean mHeaderDateShow = true;
 	private int mHeaderDateColor = 0xffffffff;
-    private int mHeaderDateSize = 17;
+    private int mHeaderDateSize = 10;
     //End Junk
     
     

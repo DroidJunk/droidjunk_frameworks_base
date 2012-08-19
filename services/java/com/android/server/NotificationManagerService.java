@@ -135,7 +135,6 @@ public class NotificationManagerService extends INotificationManager.Stub
     // for enabling and disabling notification pulse behavior
     private boolean mScreenOn = true;
     private boolean mInCall = false;
-    private boolean mNotificationPulseEnabled;
 
     private final ArrayList<NotificationRecord> mNotificationList =
             new ArrayList<NotificationRecord>();
@@ -167,12 +166,16 @@ public class NotificationManagerService extends INotificationManager.Stub
     private boolean mTurnOffSound = false;    
 
     private final String Junk_Led_Settings = "JUNK_LED_SETTINGS";
+	private final String USE_LED = "use_led";
+	private final String PULSE_FLASH_LED = "pulse_flash_led";
 	private final String DEFAULT_LED_COLOR_ON = "default_led_color_on";	
 	private final String DEFAULT_LED_COLOR = "default_led_color";	
 	private final String DEFAULT_LED_ON_MS = "default_led_on_ms";
 	private final String DEFAULT_LED_OFF_MS = "default_led_off_ms";
-	private final String PULSE_LED_SCREEN_ON = "pulse_led_screen_on";    
-	private boolean mDefaultLedColorOn;
+	private final String PULSE_LED_SCREEN_ON = "pulse_led_screen_on";
+	private boolean mUseLed = true;
+	private boolean mPulseFlashLed = false;
+	private boolean mDefaultLedColorOn = true;
     private int mDefNotifColor = 0xffffffff;
     private int mDefNotifLedOn = 10;
     private int mDefNotifLedOff = 10;
@@ -585,6 +588,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             	mTurnOffSound = intent.getBooleanExtra("QuietTimeSoundOn", mTurnOffSound);
             	mTurnOffVibrate = intent.getBooleanExtra("QuietTimeVibrateOn", mTurnOffVibrate);
             }  else if (action.equals(Junk_Led_Settings)) {
+            	mUseLed = intent.getBooleanExtra(USE_LED, mUseLed);
+            	mPulseFlashLed = intent.getBooleanExtra(PULSE_FLASH_LED, mPulseFlashLed);
             	mDefaultLedColorOn = intent.getBooleanExtra(DEFAULT_LED_COLOR_ON, mDefaultLedColorOn);
             	mDefNotifColor = intent.getIntExtra(DEFAULT_LED_COLOR, mDefNotifColor);
             	mDefNotifLedOn = intent.getIntExtra(DEFAULT_LED_ON_MS, mDefNotifLedOn);
@@ -596,32 +601,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
     };
 
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
 
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_LIGHT_PULSE), false, this);
-            update();
-        }
-
-        @Override public void onChange(boolean selfChange) {
-            update();
-        }
-
-        public void update() {
-            ContentResolver resolver = mContext.getContentResolver();
-            boolean pulseEnabled = Settings.System.getInt(resolver,
-                        Settings.System.NOTIFICATION_LIGHT_PULSE, 0) != 0;
-            if (mNotificationPulseEnabled != pulseEnabled) {
-                mNotificationPulseEnabled = pulseEnabled;
-                updateNotificationPulse();
-            }
-        }
-    }
 
     NotificationManagerService(Context context, StatusBarManagerService statusBar,
             LightsService lights)
@@ -660,6 +640,8 @@ public class NotificationManagerService extends INotificationManager.Stub
 
 		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);     
 
+		mUseLed = sp.getBoolean(USE_LED, mUseLed);
+		mPulseFlashLed = sp.getBoolean(PULSE_FLASH_LED, mPulseFlashLed);
     	mDefaultLedColorOn = sp.getBoolean(DEFAULT_LED_COLOR_ON, mDefaultLedColorOn);
     	mDefNotifColor = sp.getInt(DEFAULT_LED_COLOR, mDefNotifColor);
     	mDefNotifLedOn = sp.getInt(DEFAULT_LED_ON_MS, mDefNotifLedOn);
@@ -697,8 +679,6 @@ public class NotificationManagerService extends INotificationManager.Stub
         IntentFilter sdFilter = new IntentFilter(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
         mContext.registerReceiver(mIntentReceiver, sdFilter);
 
-        SettingsObserver observer = new SettingsObserver(mHandler);
-        observer.observe();
     }
 
     void systemReady() {
@@ -1386,6 +1366,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mLedNotification = mLights.get(n-1);
             }
         }
+        // Junk - lots of changes below
         if (mUseLedScreenOn) mScreenOn = false;
         // Don't flash while we are in a call or screen is on
         if (mLedNotification == null || mInCall || mScreenOn) {
@@ -1395,7 +1376,6 @@ public class NotificationManagerService extends INotificationManager.Stub
             int ledOnMS = mLedNotification.notification.ledOnMS;
             int ledOffMS = mLedNotification.notification.ledOffMS;
             if ((mLedNotification.notification.defaults & Notification.DEFAULT_LIGHTS) != 0) {
-                // Junk
            		if (mDefaultLedColorOn) {
            			ledARGB = mDefNotifColor;
            			ledOnMS = mDefNotifLedOn * 50;
@@ -1411,16 +1391,20 @@ public class NotificationManagerService extends INotificationManager.Stub
            			Log.e("    JB DEF:",String.valueOf(ledOnMS));
            			Log.e("    JB DEF:",String.valueOf(ledOffMS));
            		}
-           		// End Junk
             }
-            if (mNotificationPulseEnabled) {
-                // pulse repeatedly
-                mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
-                        ledOnMS, ledOffMS);
+            if (inQuietTime && mTurnOffLed) {
+            	mNotificationLight.turnOff();
+            } else {
+            	if (mUseLed) {
+            		if (mPulseFlashLed) {
+            			mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_HARDWARE,
+            					ledOnMS, ledOffMS);
+            		} else {
+            			mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
+            					ledOnMS, ledOffMS);
+            		}
+            	}
             }
-            // Junk
-            if (inQuietTime && mTurnOffLed) mNotificationLight.turnOff();
-            // End Junk
         }
     }
 

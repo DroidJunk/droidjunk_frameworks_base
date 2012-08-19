@@ -140,10 +140,10 @@ public class PhoneStatusBar extends BaseStatusBar {
 	private boolean mTogglesShow = true;
 	private boolean mTogglesTop = true;
 	private boolean mTogglesVisible = false;
-    private int mIconColor = 0xff3fa2c7;
+    private int mIconColor = 0xff33b5e5;
     private int mHeaderButtonColor = 0xffffffff;
-    private int mHandleColor = 0xd7000000;
-    private int mShadeColor = 0xbd000000;
+    private int mHandleColor = 0xff33b5e5;
+    private int mShadeColor = 0xeb000000;
     private int mNotifTextBgColor = 0xff2782a3;
     private LinearLayout mClockCenter;
     private int mHeaderBarColor = 0xff000000;
