@@ -43,7 +43,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.inputmethodservice.InputMethodService;
-import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
@@ -85,10 +84,6 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.RotationToggle;
 import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBarIconView;
-import com.android.systemui.statusbar.policy.BatteryController;
-import com.android.systemui.statusbar.policy.ClockHeader;
-import com.android.systemui.statusbar.policy.DateView;
-import com.android.systemui.statusbar.policy.DateViewHeader;
 import com.android.systemui.statusbar.policy.IntruderAlertView;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.OnSizeChangedListener;
@@ -114,35 +109,25 @@ public class PhoneStatusBar extends BaseStatusBar {
 	private final String Junk_NavBar_Settings = "JUNK_NAVBAR_SETTINGS";
 
 	private final String Junk_Pulldown_Settings = "JUNK_PULLDOWN_SETTINGS";
-	private final String Junk_Custom_Carrier  = "JUNK_CUSTOM_CARRIER";
 	private final String HEADER_BAR_COLOR = "header_bar_color";
 	private final String HEADER_BUTTON_COLOR = "header_button_color";
 	private final String PD_HANDLE_COLOR = "pd_handle_color";
 	private final String PD_SHADE_COLOR = "pd_shade_color";
 	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
-	private final String SHOW_CARRIER = "show_carrier";
-	private final String CARRIER_COLOR = "carrier_color";
-	private final String CARRIER_CUSTOM = "carrier_custom";
-	private final String CARRIER_CUSTOM_TEXT = "carrier_custom_text";
-	private final String CARRIER_SIZE = "carrier_size";
+
 	
 	private final String Junk_Toggle_Settings = "JUNK_TOGGLE_SETTINGS";	
 	private final String TOGGLES_TOP = "toggles_top";
 	private final String TOGGLES_ON = "toggles_show_toggles";
 	
-    private boolean mShowCarrier = true;
-    private int mCarrierColor = 0xff33b5e5;
-    private boolean mCustomCarrier = false;
-    private String mCustomCarrierText = "- J  U  N  K -";
-    private int mCarrierSize = 15;
-	
 	private SharedPreferences sp;  
 	private boolean mTogglesShow = true;
 	private boolean mTogglesTop = true;
 	private boolean mTogglesVisible = false;
+	private boolean mBottomBarVisible = false;
     private int mIconColor = 0xff33b5e5;
     private int mHeaderButtonColor = 0xffffffff;
-    private int mHandleColor = 0xff33b5e5;
+    private int mHandleColor = 0xff007aa7;
     private int mShadeColor = 0xeb000000;
     private int mNotifTextBgColor = 0xff2782a3;
     private LinearLayout mClockCenter;
@@ -162,7 +147,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             = "com.android.internal.policy.statusbar.START";
 
     private static final boolean DIM_BEHIND_EXPANDED_PANEL = true;
-    private static boolean SHOW_CARRIER_LABEL = true;
 
     private static final int MSG_OPEN_NOTIFICATION_PANEL = 1000;
     private static final int MSG_CLOSE_NOTIFICATION_PANEL = 1001;
@@ -233,8 +217,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     // carrier/wifi label
     private TextView mCarrierLabel;
-    private boolean mCarrierLabelVisible = false;
-    private int mCarrierLabelHeight;
+
 
     // drag bar
     CloseDragHandle mCloseView;
@@ -461,14 +444,12 @@ public class PhoneStatusBar extends BaseStatusBar {
         mPile = (NotificationRowLayout)mStatusBarWindow.findViewById(R.id.latestItems);
         mPile.setLayoutTransitionsEnabled(false);
         mPile.setLongPressListener(getNotificationLongClicker());
-        if (SHOW_CARRIER_LABEL) {
             mPile.setOnSizeChangedListener(new OnSizeChangedListener() {
                 @Override
                 public void onSizeChanged(View view, int w, int h, int oldw, int oldh) {
                     updateCarrierLabelVisibility(false);
                 }
             });
-        }
         mExpandedContents = mPile; // was: expanded.findViewById(R.id.notificationLinearLayout);
 
         mClearButton = mStatusBarWindow.findViewById(R.id.clear_all_button);
@@ -481,7 +462,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mRotationButton = (RotationToggle) mStatusBarWindow.findViewById(R.id.rotation_lock_button);
         
         mCarrierLabel = (TextView)mStatusBarWindow.findViewById(R.id.carrier_label);
-        mCarrierLabel.setVisibility(mCarrierLabelVisible ? View.VISIBLE : View.INVISIBLE);
 
         mScrollView = (ScrollView)mStatusBarWindow.findViewById(R.id.scroll);
         mScrollView.setVerticalScrollBarEnabled(false); // less drawing during pulldowns
@@ -506,7 +486,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 			e.printStackTrace();
 		}
 
-		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
    		mIconColor = sp.getInt(ICON_COLOR, mIconColor);
    		mTogglesTop = sp.getBoolean(TOGGLES_TOP, mTogglesTop);
    		mTogglesShow = sp.getBoolean(TOGGLES_ON, mTogglesShow);
@@ -515,12 +495,6 @@ public class PhoneStatusBar extends BaseStatusBar {
    		mHeaderButtonColor = sp.getInt(HEADER_BUTTON_COLOR, mHeaderButtonColor);
    		mShadeColor = sp.getInt(PD_SHADE_COLOR, mShadeColor);
    		mNotifTextBgColor = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
-   		mShowCarrier = sp.getBoolean(SHOW_CARRIER, mShowCarrier);
-   		SHOW_CARRIER_LABEL = mShowCarrier;
-   		mCarrierColor = sp.getInt(CARRIER_COLOR, mCarrierColor);
-   		mCustomCarrier = sp.getBoolean(CARRIER_CUSTOM, mCustomCarrier);
-   		mCustomCarrierText = sp.getString(CARRIER_CUSTOM_TEXT, mCustomCarrierText);
-   		mCarrierSize = sp.getInt(CARRIER_SIZE, mCarrierSize);
 
         mNotificationPanel.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mShadeColor, .5f, 0f));
         mCloseHandle = mNotificationPanel.findViewById(R.id.close_handle);
@@ -535,12 +509,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderBarColor, .5f, 0f));
         mBottomBar = mNotificationPanel.findViewById(R.id.bottom_bar);
         mToggles = mNotificationPanel.findViewById(R.id.junk_toggle_view);
-        mCarrierLabel.setVisibility(mShowCarrier ? View.VISIBLE : View.GONE);
-        NetworkController.showCustomName = mCustomCarrier;
-        NetworkController.CustomName = mCustomCarrierText;
-        mCarrierLabel.setTextColor(mCarrierColor);
-        mCarrierLabel.setTextSize(mCarrierSize);
-        
         
 		FrameLayout.LayoutParams
 		barParams = (FrameLayout.LayoutParams) mBottomBar.getLayoutParams();
@@ -599,15 +567,11 @@ public class PhoneStatusBar extends BaseStatusBar {
         mNetworkController.addSignalCluster(signalCluster);
         signalCluster.setNetworkController(mNetworkController);
 
-        if (SHOW_CARRIER_LABEL) {
-            // for mobile devices, we always show mobile connection info here (SPN/PLMN)
-            // for other devices, we show whatever network is connected
             if (mNetworkController.hasMobileDataFeature()) {
                 mNetworkController.addMobileLabelView(mCarrierLabel);
             } else {
                 mNetworkController.addCombinedLabelView(mCarrierLabel);
             }
-        }
 
 //        final ImageView wimaxRSSI =
 //                (ImageView)sb.findViewById(R.id.wimax_signal);
@@ -1061,54 +1025,36 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     protected void updateCarrierLabelVisibility(boolean force) {
     	// Junk - lots of changes below
-    	if (!SHOW_CARRIER_LABEL && !mTogglesShow) return;
+    	//if (!SHOW_CARRIER_LABEL && !mTogglesShow) return;
     	
         // The idea here is to only show the carrier label when there is enough room to see it, 
         // i.e. when there aren't enough notifications to fill the panel.
-        if (DEBUG) {
-            Slog.d(TAG, String.format("pileh=%d scrollh=%d carrierh=%d",
-                    mPile.getHeight(), mScrollView.getHeight(), mCarrierLabelHeight));
-        }
 
         
         boolean makeTogglesVisible = true;
         if (!mTogglesTop) {
         	makeTogglesVisible = 
-        			mPile.getHeight() < (mScrollView.getHeight() - (mCarrierLabelHeight + 58));
+        			mPile.getHeight() < (mScrollView.getHeight() - (mBottomBar.getHeight() + 58));
         } else {
         	makeTogglesVisible = mTrackingPosition > 246;
         }
 
         boolean makeVisible = true;
         makeVisible = 
-                mPile.getHeight() < (mScrollView.getHeight() - mCarrierLabelHeight);
+                mPile.getHeight() < (mScrollView.getHeight() - mBottomBar.getHeight());
+
         
-        if (force || mCarrierLabelVisible != makeVisible) {
-            mCarrierLabelVisible = makeVisible;
+        if (force || mBottomBarVisible != makeVisible) {
+            mBottomBarVisible = makeVisible;
             if (DEBUG) {
                 Slog.d(TAG, "making carrier label " + (makeVisible?"visible":"invisible"));
             }
             
-            mCarrierLabel.animate().cancel();
+            mBottomBar.animate().cancel();
             if (makeVisible) {
-                mCarrierLabel.setVisibility(View.VISIBLE);
                 mBottomBar.setVisibility(View.VISIBLE);
             }
             
-            mCarrierLabel.animate()
-                .alpha(makeVisible ? 1f : 0f)
-                .setDuration(100)
-                .setListener(makeVisible ? null : new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (!mCarrierLabelVisible) { // race
-                            mCarrierLabel.setVisibility(View.INVISIBLE);
-                            mCarrierLabel.setAlpha(0f);
-                        }
-                    }
-                })
-                .start();
-
         
             mBottomBar.animate()
             .alpha(makeVisible ? 1f : 0f)
@@ -1116,7 +1062,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             .setListener(makeVisible ? null : new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if (!mCarrierLabelVisible) { // race
+                    if (!mBottomBarVisible) { // race
                         mBottomBar.setVisibility(View.INVISIBLE);
                         mBottomBar.setAlpha(0f);
                     }
@@ -2543,28 +2489,12 @@ public class PhoneStatusBar extends BaseStatusBar {
             	mHandleColor = intent.getIntExtra(PD_HANDLE_COLOR, mHandleColor);
             	mShadeColor = intent.getIntExtra(PD_SHADE_COLOR, mShadeColor);
             	mNotifTextBgColor = intent.getIntExtra(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
-            	mShowCarrier = intent.getBooleanExtra(SHOW_CARRIER, mShowCarrier);
-            	SHOW_CARRIER_LABEL = mShowCarrier;
-            	mCarrierColor = intent.getIntExtra(CARRIER_COLOR, mCarrierColor);
-            	mCustomCarrier = intent.getBooleanExtra(CARRIER_CUSTOM, mCustomCarrier);
-            	mCustomCarrierText = intent.getStringExtra(CARRIER_CUSTOM_TEXT);
-            	mCarrierSize = intent.getIntExtra(CARRIER_SIZE, mCarrierSize);
             	mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderBarColor, .5f, 0f));
             	mNotificationPanel.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mShadeColor, .5f, 0f));
             	((ImageView) mCloseHandle).setColorFilter(ColorFilterMaker.changeColorAlpha(mHandleColor, .5f, 0f));
                 ((ImageView) mJunkSettingsButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
                 ((ImageView) mSettingsButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
                 ((ImageView) mClearButton).setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderButtonColor, .5f, 0f));
-                mCarrierLabel.setVisibility(mShowCarrier ? View.VISIBLE : View.GONE);
-                NetworkController.showCustomName = mCustomCarrier;
-                NetworkController.CustomName = mCustomCarrierText;
-                mCarrierLabel.setTextColor(mCarrierColor);
-                mCarrierLabel.setTextSize(mCarrierSize);
-             	// Refresh carrier text
-                Intent i = new Intent();
-             	i.setAction(Junk_Custom_Carrier);
-             	mContext.sendBroadcast(i);
-             	i = null; 
             }    
             // End Junk
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
@@ -2677,7 +2607,6 @@ public class PhoneStatusBar extends BaseStatusBar {
               notificationPanelDecorationHeight 
             + res.getDimensionPixelSize(R.dimen.close_handle_underlap);
 
-        mCarrierLabelHeight = res.getDimensionPixelSize(R.dimen.carrier_label_height);
 
         if (false) Slog.v(TAG, "updateResources");
     }

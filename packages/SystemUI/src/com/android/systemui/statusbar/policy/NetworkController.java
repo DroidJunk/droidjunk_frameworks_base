@@ -25,6 +25,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -37,7 +39,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.os.SystemProperties;
 import android.provider.Settings;
 import android.provider.Telephony;
 import android.telephony.PhoneStateListener;
@@ -146,9 +147,19 @@ public class NetworkController extends BroadcastReceiver {
     private boolean mLastAirplaneMode = true;
     
     // Junk
-    private final String Junk_Custom_Carrier  = "JUNK_CUSTOM_CARRIER";
-    public static boolean showCustomName = false;
-    public static String CustomName = "- J U N K -";
+    private final String Junk_Pulldown_Settings = "JUNK_PULLDOWN_SETTINGS";
+	private final String SHOW_CARRIER = "show_carrier";
+	private final String CARRIER_COLOR = "carrier_color";
+	private final String CARRIER_SIZE = "carrier_size";
+	private final String CARRIER_CUSTOM = "carrier_custom";
+	private final String CARRIER_CUSTOM_TEXT = "carrier_custom_text";
+    private boolean mShowCarrier = true;
+    private int mCarrierColor = 0xff33b5e5;
+    private int mCarrierSize = 15;
+    private boolean showCustomName = false;
+    private String CustomName = "- J U N K -";
+    private String OldNetworkName = "";
+    private SharedPreferences sp;
     // End Junk
 
     // our ui
@@ -206,6 +217,25 @@ public class NetworkController extends BroadcastReceiver {
         mAlwaysShowCdmaRssi = res.getBoolean(
                 com.android.internal.R.bool.config_alwaysUseCdmaRssi);
 
+        
+        // Junk
+  		Context settingsContext = mContext;
+		try {
+			settingsContext = mContext.createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+
+	    mShowCarrier = sp.getBoolean(SHOW_CARRIER, mShowCarrier);
+	    mCarrierColor = sp.getInt(CARRIER_COLOR, mCarrierColor);
+	    mCarrierSize = sp.getInt(CARRIER_SIZE, mCarrierSize);
+   		showCustomName = sp.getBoolean(CARRIER_CUSTOM, showCustomName);
+   		CustomName = sp.getString(CARRIER_CUSTOM_TEXT, CustomName);
+
+        // End Junk
         // set up the default wifi icon, used when no radios have ever appeared
         updateWifiIcons();
         updateWimaxIcons();
@@ -223,10 +253,7 @@ public class NetworkController extends BroadcastReceiver {
         mNetworkNameSeparator = mContext.getString(R.string.status_bar_network_name_separator);
         mNetworkNameDefault = mContext.getString(
                 com.android.internal.R.string.lockscreen_carrier_default);
-        //mNetworkName = mNetworkNameDefault;
-        // Junk
-        mNetworkName = showCustomName ? CustomName: mNetworkNameDefault;
-        // End Junk
+        mNetworkName = mNetworkNameDefault;
 
         // wifi
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -248,7 +275,7 @@ public class NetworkController extends BroadcastReceiver {
         filter.addAction(ConnectivityManager.INET_CONDITION_ACTION);
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        filter.addAction(Junk_Custom_Carrier);
+        filter.addAction(Junk_Pulldown_Settings);
         mWimaxSupported = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_wimaxEnabled);
         if(mWimaxSupported) {
@@ -386,8 +413,14 @@ public class NetworkController extends BroadcastReceiver {
                 action.equals(WimaxManagerConstants.WIMAX_NETWORK_STATE_CHANGED_ACTION)) {
             updateWimaxState(intent);
             refreshViews();
-        } else if (action.equals(Junk_Custom_Carrier)) {
-        refreshViews();
+        } else if (action.equals(Junk_Pulldown_Settings)) {
+    	    mShowCarrier = intent.getBooleanExtra(SHOW_CARRIER, mShowCarrier);
+    	    mCarrierColor = intent.getIntExtra(CARRIER_COLOR, mCarrierColor);
+    	    mCarrierSize = intent.getIntExtra(CARRIER_SIZE, mCarrierSize);
+        	showCustomName = intent.getBooleanExtra(CARRIER_CUSTOM, showCustomName);
+        	if (intent.getStringExtra(CARRIER_CUSTOM_TEXT) != null) 
+        		CustomName = intent.getStringExtra(CARRIER_CUSTOM_TEXT);
+        	refreshViews();
         }
     }
 
@@ -782,17 +815,12 @@ public class NetworkController extends BroadcastReceiver {
             something = true;
         }
         if (something) {
-            // Junk
-        	//mNetworkName = str.toString();
-            mNetworkName = showCustomName ? CustomName: str.toString();
-            // End Junk
+        	mNetworkName = str.toString();
             
         } else {
             mNetworkName = mNetworkNameDefault;
-            // Junk
-            mNetworkName = showCustomName ? CustomName: mNetworkNameDefault;
-            // End Junk
         }
+        OldNetworkName = mNetworkName;
     }
 
     // ===== Wifi ===================================================================
@@ -998,9 +1026,6 @@ public class NetworkController extends BroadcastReceiver {
         int N;
         final boolean emergencyOnly = (mServiceState != null && mServiceState.isEmergencyOnly());
         
-        // Junk
-        mNetworkName = showCustomName ? CustomName: mNetworkNameDefault;
-        // End Junk
 
         if (!mHasMobileDataFeature) {
             mDataSignalIconId = mPhoneSignalIconId = 0;
@@ -1306,17 +1331,26 @@ public class NetworkController extends BroadcastReceiver {
                 v.setText(combinedLabel);
             }
         }
-
+        
         // wifi label
         N = mWifiLabelViews.size();
         for (int i=0; i<N; i++) {
             TextView v = mWifiLabelViews.get(i);
             v.setText(wifiLabel);
-            if ("".equals(wifiLabel)) {
-                v.setVisibility(View.GONE);
+            // Junk
+            if (mShowCarrier) {
+            	v.setVisibility(View.VISIBLE);
+            	v.setTextColor(mCarrierColor);
+            	v.setTextSize(mCarrierSize);
+                if (showCustomName) {
+                	v.setText(CustomName);
+                } else {
+                	v.setText(wifiLabel);
+                }
             } else {
-                v.setVisibility(View.VISIBLE);
+            	v.setVisibility(View.GONE);
             }
+            // End Junk
         }
 
         // mobile label
@@ -1324,11 +1358,20 @@ public class NetworkController extends BroadcastReceiver {
         for (int i=0; i<N; i++) {
             TextView v = mMobileLabelViews.get(i);
             v.setText(mobileLabel);
-            if ("".equals(mobileLabel)) {
-                v.setVisibility(View.GONE);
+            // Junk
+            if (mShowCarrier) {
+            	v.setVisibility(View.VISIBLE);
+            	v.setTextColor(mCarrierColor);
+            	v.setTextSize(mCarrierSize);
+                if (showCustomName) {
+                	v.setText(CustomName);
+                } else {
+                	v.setText(mobileLabel);
+                }
             } else {
-                v.setVisibility(View.VISIBLE);
+            	v.setVisibility(View.GONE);
             }
+            // End Junk
         }
     }
 
