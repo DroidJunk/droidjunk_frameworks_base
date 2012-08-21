@@ -819,7 +819,7 @@ public class Notification implements Parcelable
         if (this.icon != 0) {
             contentView.setImageViewResource(R.id.icon, this.icon);
         	contentView.setDrawableColorMatrix(R.id.icon, true,   // icon bg
-        			sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff1a4554));
+        			sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d));
         }
         if (priority < PRIORITY_LOW) {
             contentView.setInt(R.id.icon,
@@ -829,16 +829,16 @@ public class Notification implements Parcelable
         }
         if (contentTitle != null) {
             contentView.setTextViewText(R.id.title, contentTitle);
-            contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
+            contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
         }
         if (contentText != null) {
             contentView.setTextViewText(R.id.text, contentText);
-            contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
+            contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
         }
         if (this.when != 0) {
             contentView.setViewVisibility(R.id.time, View.VISIBLE);
             contentView.setLong(R.id.time, "setTime", when);
-            contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
+            contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
         }
         if (this.number != 0) {
             NumberFormat f = NumberFormat.getIntegerInstance();
@@ -1433,17 +1433,17 @@ public class Notification implements Parcelable
                 contentView.setImageViewResource(smallIconImageViewId, mSmallIcon);
                 contentView.setViewVisibility(smallIconImageViewId, View.VISIBLE);
                 contentView.setDrawableColorMatrix(R.id.icon, true,   // icon bg		
-                		sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff1a4554));
+                		sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d));
             } else {
                 contentView.setViewVisibility(smallIconImageViewId, View.GONE);
             }
             if (mContentTitle != null) {
                 contentView.setTextViewText(R.id.title, mContentTitle);
-                contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
+                contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
             }
             if (mContentText != null) {
                 contentView.setTextViewText(R.id.text, mContentText);
-                contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
+                contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
                 showLine3 = true;
             }
             if (mContentInfo != null) {
@@ -1508,7 +1508,7 @@ public class Notification implements Parcelable
                 } else {
                     contentView.setViewVisibility(R.id.time, View.VISIBLE);
                     contentView.setLong(R.id.time, "setTime", mWhen);
-                    contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xff000000));
+                    contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
                 }
             }
             contentView.setViewVisibility(R.id.line3, showLine3 ? View.VISIBLE : View.GONE);
