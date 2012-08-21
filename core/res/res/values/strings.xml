@@ -1882,10 +1882,10 @@
 
     <!-- Instructions telling the user that they entered the wrong pin while trying
          to unlock the keyguard.  Displayed in one line in a large font.  -->
-    <string name="keyguard_password_wrong_pin_code">Incorrect PIN code.</string>
+    <string name="keyguard_password_wrong_pin_code">Incorrect PIN code</string>
 
     <!-- Instructions telling the user how to unlock the phone. -->
-    <string name="keyguard_label_text">To unlock, press Menu then 0.</string>
+    <string name="keyguard_label_text">To unlock, press Menu then 0</string>
 
     <!-- This can be used in any application wanting to disable the text "Emergency number" -->
     <string name="emergency_call_dialog_number_for_display">Emergency number</string>
@@ -1895,16 +1895,16 @@
                                           --> <skip />
 
     <!-- On the keyguard screen, it shows the carrier the phone is connected to.  This is displayed if the phone is not connected to a carrier.-->
-    <string name="lockscreen_carrier_default">No service.</string>
+    <string name="lockscreen_carrier_default">No service</string>
 
     <!-- Shown in the lock screen to tell the user that the screen is locked. -->
-    <string name="lockscreen_screen_locked">Screen locked.</string>
+    <string name="lockscreen_screen_locked">Screen locked</string>
 
     <!-- when pattern lock is enabled, tell them about the emergency dial -->
-    <string name="lockscreen_instructions_when_pattern_enabled">Press Menu to unlock or place emergency call.</string>
+    <string name="lockscreen_instructions_when_pattern_enabled">Press Menu to unlock or place emergency call</string>
 
     <!-- On the keyguard screen, when pattern lock is disabled, only tell them to press menu to unlock.  This is shown in small font at the bottom. -->
-    <string name="lockscreen_instructions_when_pattern_disabled">Press Menu to unlock.</string>
+    <string name="lockscreen_instructions_when_pattern_disabled">Press Menu to unlock</string>
 
     <!-- On the unlock pattern screen, shown at the top of the unlock screen to tell the user what to do. Below this text is the place for theu ser to draw the pattern. -->
     <string name="lockscreen_pattern_instructions">Draw pattern to unlock</string>

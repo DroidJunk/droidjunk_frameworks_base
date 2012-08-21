@@ -65,6 +65,9 @@
 
     <style name="TextAppearance.StatusBar.Expanded.Network" parent="@style/TextAppearance.StatusBar.Expanded.Date">
         <item name="android:textColor">#999999</item>
+        <!-- JUNK -->
+        <item name="android:textAllCaps">false</item>
+        <!-- END JUNK -->
 	</style>
 
     <style name="Animation" />
