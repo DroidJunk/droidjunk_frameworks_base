@@ -2420,7 +2420,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
             }
-            v.getContext().startActivity(new Intent("android.settings.CUSTOM_JUNK_SETTINGS")
+            v.getContext().startActivity(new Intent("com.junk.settings.JUNK_SETTINGS")
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             animateCollapse();
         }
