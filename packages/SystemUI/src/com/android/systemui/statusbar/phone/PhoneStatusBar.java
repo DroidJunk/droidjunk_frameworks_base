@@ -480,7 +480,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         // Junk
   		Context settingsContext = mContext;
 		try {
-			settingsContext = mContext.createPackageContext("com.android.settings",0);
+			settingsContext = mContext.createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

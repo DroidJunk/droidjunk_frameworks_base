@@ -114,7 +114,7 @@ public class JunkQuietTimeService {
     	
   		Context settingsContext = myContext;
 		try {
-			settingsContext = myContext.createPackageContext("com.android.settings",0);
+			settingsContext = myContext.createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

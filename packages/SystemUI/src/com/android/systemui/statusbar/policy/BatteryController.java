@@ -96,7 +96,6 @@ public class BatteryController extends LinearLayout {
 
     
     private int mBatteryIconNum = 0;
-    private String mBatteryIconString = "0";
     private boolean mBarBottom = false;
     private boolean mBarRight = false;
     private boolean mShowCircle = false;
@@ -150,13 +149,17 @@ public class BatteryController extends LinearLayout {
         
   		Context settingsContext = getContext();
 		try {
-			settingsContext = getContext().createPackageContext("com.android.settings",0);
+			settingsContext = getContext().createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
+			Log.e("******************************************************", " NOT READ");
 		}
-		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
-		mBatteryIconNum = Integer.valueOf(mPrefs.getString(BATTERY_ICONS, "0"));
-		mBatteryIconString = mPrefs.getString(BATTERY_ICONS, "0");
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+		
+		Log.e("**************************",String.valueOf(mPrefs.contains(BATTERY_LEVEL_COLOR_THREE)));
+		
+		mBatteryIconNum = mPrefs.getInt(BATTERY_ICONS, mBatteryIconNum);
+		Log.e("******************************************************", String.valueOf(mBatteryIconNum));
    		mBatteryLevelsOne = mPrefs.getInt(BATTERY_LEVEL_ONE, mBatteryLevelsOne);
    		mBatteryLevelsColorOne = mPrefs.getInt(BATTERY_LEVEL_COLOR_ONE, mBatteryLevelsColorOne);
    		mBatteryLevelsTwo = mPrefs.getInt(BATTERY_LEVEL_TWO, mBatteryLevelsTwo);
@@ -222,11 +225,7 @@ public class BatteryController extends LinearLayout {
   
             if (action.equals(Junk_Battery_Settings)) {
  
-        		String tempString = intent.getStringExtra(BATTERY_ICONS);
-            	if (tempString != null){
-        			mBatteryIconString = tempString;
-        			mBatteryIconNum = Integer.valueOf(mBatteryIconString);
-        		}
+            	mBatteryIconNum = intent.getIntExtra(BATTERY_ICONS, mBatteryIconNum);
            		mShowCircle = intent.getBooleanExtra(BATTERY_SHOW_CIRCLE, mShowCircle);
            		mShowSquare = intent.getBooleanExtra(BATTERY_SHOW_SQUARE, mShowSquare);
            		mCircleColorOne = intent.getIntExtra(BATTERY_CIRCLE_COLOR_ONE, mCircleColorOne);

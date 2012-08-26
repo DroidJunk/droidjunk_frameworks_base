@@ -86,7 +86,7 @@ public final class DateViewHeader extends TextView {
         // Junk
   		Context settingsContext = getContext();
 		try {
-			settingsContext = getContext().createPackageContext("com.android.settings",0);
+			settingsContext = getContext().createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}

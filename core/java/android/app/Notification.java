@@ -806,7 +806,7 @@ public class Notification implements Parcelable
 
         Context settingsContext = context;
 		try {
-			settingsContext = context.createPackageContext("com.android.settings",0);
+			settingsContext = context.createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -1412,7 +1412,7 @@ public class Notification implements Parcelable
             
             Context settingsContext = mContext;
      		try {
-     			settingsContext = mContext.createPackageContext("com.android.settings",0);
+     			settingsContext = mContext.createPackageContext("com.junk.settings",0);
      		} catch (NameNotFoundException e) {
      			e.printStackTrace();
      		}

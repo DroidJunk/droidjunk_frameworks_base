@@ -111,13 +111,13 @@ public class KeyButtonView extends ImageView {
 		// Junk
   		Context settingsContext = getContext();
 		try {
-			settingsContext = getContext().createPackageContext("com.android.settings",0);
+			settingsContext = getContext().createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
  		glowColor = mPrefs.getInt(NAV_BAR_GLOW_COLOR, glowColor);
  		navBarButtonColor = mPrefs.getInt(NAV_BAR_BUTTON_COLOR, navBarButtonColor);
  		navBarAnimSpeed = mPrefs.getInt(NAV_BAR_ANIM_SPEED, navBarAnimSpeed);

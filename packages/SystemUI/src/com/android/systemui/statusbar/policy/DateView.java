@@ -76,12 +76,12 @@ public final class DateView extends TextView {
         // Junk
   		Context settingsContext = getContext();
 		try {
-			settingsContext = getContext().createPackageContext("com.android.settings",0);
+			settingsContext = getContext().createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
  		
-		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
 		mDateColor = sp.getInt(DATE_COLOR, 0xff00a2e5);
 		mDateSize = sp.getInt(DATE_SIZE, 17);
         // End Junk

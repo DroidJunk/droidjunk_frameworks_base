@@ -108,13 +108,13 @@ public class ClockRight extends TextView {
         // Junk
  		Context settingsContext = getContext();
 		try {
-			settingsContext = getContext().createPackageContext("com.android.settings",0);
+			settingsContext = getContext().createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
  		
-		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
  		
  		mShowClockRight = mPrefs.getBoolean(SHOW_CLOCK_RIGHT, mShowClockRight);
  		mClockAmPm = mPrefs.getBoolean(CLOCK_AMPM, mClockAmPm);
