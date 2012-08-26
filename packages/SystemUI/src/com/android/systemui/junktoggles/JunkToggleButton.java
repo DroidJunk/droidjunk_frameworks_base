@@ -60,12 +60,12 @@ public abstract class JunkToggleButton extends TextView {
         
   		Context settingsContext = getContext();
 		try {
-			settingsContext = getContext().createPackageContext("com.android.settings",0);
+			settingsContext = getContext().createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
      		
-		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
 		
 		mShowTorch = mPrefs.getBoolean(TOGGLES_TORCH_ON, mShowTorch);
 		mShowFourg = mPrefs.getBoolean(TOGGLES_4G_ON, mShowFourg);

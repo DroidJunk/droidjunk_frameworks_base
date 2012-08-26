@@ -152,14 +152,9 @@ public class BatteryController extends LinearLayout {
 			settingsContext = getContext().createPackageContext("com.junk.settings",0);
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
-			Log.e("******************************************************", " NOT READ");
 		}
 		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
-		
-		Log.e("**************************",String.valueOf(mPrefs.contains(BATTERY_LEVEL_COLOR_THREE)));
-		
 		mBatteryIconNum = mPrefs.getInt(BATTERY_ICONS, mBatteryIconNum);
-		Log.e("******************************************************", String.valueOf(mBatteryIconNum));
    		mBatteryLevelsOne = mPrefs.getInt(BATTERY_LEVEL_ONE, mBatteryLevelsOne);
    		mBatteryLevelsColorOne = mPrefs.getInt(BATTERY_LEVEL_COLOR_ONE, mBatteryLevelsColorOne);
    		mBatteryLevelsTwo = mPrefs.getInt(BATTERY_LEVEL_TWO, mBatteryLevelsTwo);
