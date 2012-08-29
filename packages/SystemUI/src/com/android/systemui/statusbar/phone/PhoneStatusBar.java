@@ -113,8 +113,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 	private final String HEADER_BUTTON_COLOR = "header_button_color";
 	private final String PD_HANDLE_COLOR = "pd_handle_color";
 	private final String PD_SHADE_COLOR = "pd_shade_color";
-	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
-
 	
 	private final String Junk_Toggle_Settings = "JUNK_TOGGLE_SETTINGS";	
 	private final String TOGGLES_TOP = "toggles_top";
@@ -129,7 +127,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     private int mHeaderButtonColor = 0xffffffff;
     private int mHandleColor = 0xff007aa7;
     private int mShadeColor = 0xeb000000;
-    private int mNotifTextBgColor = 0xff2782a3;
     private LinearLayout mClockCenter;
     private int mHeaderBarColor = 0xff000000;
 	View mHeaderBar;    
@@ -494,7 +491,6 @@ public class PhoneStatusBar extends BaseStatusBar {
    		mHandleColor = sp.getInt(PD_HANDLE_COLOR, mHandleColor);
    		mHeaderButtonColor = sp.getInt(HEADER_BUTTON_COLOR, mHeaderButtonColor);
    		mShadeColor = sp.getInt(PD_SHADE_COLOR, mShadeColor);
-   		mNotifTextBgColor = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
 
         mNotificationPanel.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mShadeColor, .5f, 0f));
         mCloseHandle = mNotificationPanel.findViewById(R.id.close_handle);
@@ -2488,7 +2484,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             	mHeaderBarColor = intent.getIntExtra(HEADER_BAR_COLOR, mHeaderBarColor);
             	mHandleColor = intent.getIntExtra(PD_HANDLE_COLOR, mHandleColor);
             	mShadeColor = intent.getIntExtra(PD_SHADE_COLOR, mShadeColor);
-            	mNotifTextBgColor = intent.getIntExtra(PD_NOTIF_TEXT_BG_COLOR, mNotifTextBgColor);
             	mHeaderBar.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mHeaderBarColor, .5f, 0f));
             	mNotificationPanel.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mShadeColor, .5f, 0f));
             	((ImageView) mCloseHandle).setColorFilter(ColorFilterMaker.changeColorAlpha(mHandleColor, .5f, 0f));

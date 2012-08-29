@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff.Mode;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -58,7 +59,11 @@ public class Notification implements Parcelable
 	
 	private final String PD_NOTIF_ICON_BG_COLOR = "pd_notif_icon_bg_color";
 	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
-
+	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
+	SharedPreferences sp;
+	private int icon_bg_color = 0xff0e303d;
+	private int text_color = 0xfff6f6f6;
+	private int text_bg_color = 0xff0e303d;
 	
     /**
      * Use all default values (where applicable).
@@ -805,45 +810,54 @@ public class Notification implements Parcelable
     	// TODO: rewrite this to use Builder
 
         Context settingsContext = context;
-		try {
-			settingsContext = context.createPackageContext("com.junk.settings",0);
-		} catch (NameNotFoundException e) {
-			e.printStackTrace();
-		}
+  		try {
+  			settingsContext = context.createPackageContext("com.junk.settings",0);
+  		} catch (NameNotFoundException e) {
+  			e.printStackTrace();
+  		}
 
-        SharedPreferences sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
-    	
+        sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+        text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6);
+        text_bg_color = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, 0xff0e303d);
+        icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d);    	
         
         RemoteViews contentView = new RemoteViews(context.getPackageName(),
                 R.layout.notification_template_base);
         if (this.icon != 0) {
             contentView.setImageViewResource(R.id.icon, this.icon);
-        	contentView.setDrawableColorMatrix(R.id.icon, true,   // icon bg
-        			sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d));
+            
+            contentView.setInt(R.id.icon,
+                    "setBackgroundResource", R.drawable.notification_bg_junk);
+            contentView.setInt(R.id.status_bar_latest_event_content,
+                    "setBackgroundResource", R.drawable.notification_bg_junk);
         }
         if (priority < PRIORITY_LOW) {
             contentView.setInt(R.id.icon,
-                    "setBackgroundResource", R.drawable.notification_template_icon_low_bg);
+                    "setBackgroundResource", R.drawable.notification_bg_junk);
             contentView.setInt(R.id.status_bar_latest_event_content,
-                    "setBackgroundResource", R.drawable.notification_bg_low);
-        }
+                    "setBackgroundResource", R.drawable.notification_bg_junk);
+            }
+        contentView.setDrawableColorMatrix(R.id.icon, true, icon_bg_color);
+        contentView.setDrawableColorMatrix(R.id.status_bar_latest_event_content, true,		
+        		text_bg_color);
         if (contentTitle != null) {
             contentView.setTextViewText(R.id.title, contentTitle);
-            contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
+            contentView.setTextColor(R.id.title, text_color);
         }
         if (contentText != null) {
             contentView.setTextViewText(R.id.text, contentText);
-            contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
+            contentView.setTextColor(R.id.text, text_color);
         }
         if (this.when != 0) {
             contentView.setViewVisibility(R.id.time, View.VISIBLE);
             contentView.setLong(R.id.time, "setTime", when);
-            contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
+            contentView.setTextColor(R.id.time, text_color);
         }
         if (this.number != 0) {
             NumberFormat f = NumberFormat.getIntegerInstance();
             contentView.setTextViewText(R.id.info, f.format(this.number));
         }
+
 
         this.contentView = contentView;
         this.contentIntent = contentIntent;
@@ -936,6 +950,11 @@ public class Notification implements Parcelable
         
     	private final String PD_NOTIF_ICON_BG_COLOR = "pd_notif_icon_bg_color";
     	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
+    	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
+    	SharedPreferences sp;
+    	private int icon_bg_color = 0xff0e303d;
+    	public static int text_color = 0xfff6f6f6;
+    	private int text_bg_color = 0xff0e303d;
 
         private long mWhen;
         private int mSmallIcon;
@@ -991,8 +1010,8 @@ public class Notification implements Parcelable
          */
         public Builder(Context context) {
             mContext = context;
-
-            // Set defaults to match the defaults of a Notification
+            
+           // Set defaults to match the defaults of a Notification
             mWhen = System.currentTimeMillis();
             mAudioStreamType = STREAM_DEFAULT;
             mPriority = PRIORITY_DEFAULT;
@@ -1409,46 +1428,55 @@ public class Notification implements Parcelable
             boolean showLine3 = false;
             boolean showLine2 = false;
             int smallIconImageViewId = R.id.icon;
-            
-            Context settingsContext = mContext;
-     		try {
-     			settingsContext = mContext.createPackageContext("com.junk.settings",0);
-     		} catch (NameNotFoundException e) {
-     			e.printStackTrace();
-     		}
 
-             SharedPreferences sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+            Context settingsContext = mContext;
+      		try {
+      			settingsContext = mContext.createPackageContext("com.junk.settings",0);
+      		} catch (NameNotFoundException e) {
+      			e.printStackTrace();
+      		}
+
+            sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+            text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6);
+            text_bg_color = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, 0xff0e303d);
+            icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d);
+              
             
             if (mLargeIcon != null) {
                 contentView.setImageViewBitmap(R.id.icon, mLargeIcon);
                 smallIconImageViewId = R.id.right_icon;
+                contentView.setDrawableColorMatrix(R.id.icon, true, icon_bg_color);
             }
             if (mPriority < PRIORITY_LOW) {
                 contentView.setInt(R.id.icon,
-                        "setBackgroundResource", R.drawable.notification_template_icon_low_bg);
-                contentView.setInt(R.id.status_bar_latest_event_content,
-                        "setBackgroundResource", R.drawable.notification_bg_low);
+                        "setBackgroundResource", R.drawable.notification_bg_junk);
+                contentView.setDrawableColorMatrix(R.id.icon, true, icon_bg_color);
             }
+
+            contentView.setInt(R.id.status_bar_latest_event_content,
+                    "setBackgroundResource", R.drawable.notification_bg_junk);            
+            contentView.setDrawableColorMatrix(R.id.status_bar_latest_event_content, true,		
+            		text_bg_color);                
+            
             if (mSmallIcon != 0) {
                 contentView.setImageViewResource(smallIconImageViewId, mSmallIcon);
                 contentView.setViewVisibility(smallIconImageViewId, View.VISIBLE);
-                contentView.setDrawableColorMatrix(R.id.icon, true,   // icon bg		
-                		sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d));
             } else {
                 contentView.setViewVisibility(smallIconImageViewId, View.GONE);
             }
             if (mContentTitle != null) {
                 contentView.setTextViewText(R.id.title, mContentTitle);
-                contentView.setTextColor(R.id.title, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
+                contentView.setTextColor(R.id.title, text_color);
             }
             if (mContentText != null) {
                 contentView.setTextViewText(R.id.text, mContentText);
-                contentView.setTextColor(R.id.text, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
+                contentView.setTextColor(R.id.text, text_color);
                 showLine3 = true;
             }
             if (mContentInfo != null) {
                 contentView.setTextViewText(R.id.info, mContentInfo);
                 contentView.setViewVisibility(R.id.info, View.VISIBLE);
+                contentView.setTextColor(R.id.info, text_color);
                 showLine3 = true;
             } else if (mNumber > 0) {
                 final int tooBig = mContext.getResources().getInteger(
@@ -1461,6 +1489,7 @@ public class Notification implements Parcelable
                     contentView.setTextViewText(R.id.info, f.format(mNumber));
                 }
                 contentView.setViewVisibility(R.id.info, View.VISIBLE);
+                contentView.setTextColor(R.id.info, text_color);
                 showLine3 = true;
             } else {
                 contentView.setViewVisibility(R.id.info, View.GONE);
@@ -1469,9 +1498,11 @@ public class Notification implements Parcelable
             // Need to show three lines?
             if (mSubText != null) {
                 contentView.setTextViewText(R.id.text, mSubText);
+                contentView.setTextColor(R.id.text, text_color);
                 if (mContentText != null) {
                     contentView.setTextViewText(R.id.text2, mContentText);
                     contentView.setViewVisibility(R.id.text2, View.VISIBLE);
+                    contentView.setTextColor(R.id.text2, text_color);
                     showLine2 = true;
                 } else {
                     contentView.setViewVisibility(R.id.text2, View.GONE);
@@ -1508,7 +1539,7 @@ public class Notification implements Parcelable
                 } else {
                     contentView.setViewVisibility(R.id.time, View.VISIBLE);
                     contentView.setLong(R.id.time, "setTime", mWhen);
-                    contentView.setTextColor(R.id.time, sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6));
+                    contentView.setTextColor(R.id.time, text_color);
                 }
             }
             contentView.setViewVisibility(R.id.line3, showLine3 ? View.VISIBLE : View.GONE);
@@ -1570,6 +1601,7 @@ public class Notification implements Parcelable
                               : R.layout.notification_action);
             button.setTextViewCompoundDrawables(R.id.action0, action.icon, 0, 0, 0);
             button.setTextViewText(R.id.action0, action.title);
+            button.setTextColor(R.id.time, text_color);
             if (!tombstone) {
                 button.setOnClickPendingIntent(R.id.action0, action.actionIntent);
             }
@@ -1621,6 +1653,7 @@ public class Notification implements Parcelable
                 n.actions = new Action[mActions.size()];
                 mActions.toArray(n.actions);
             }
+            
             return n;
         }
 
@@ -1822,6 +1855,8 @@ public class Notification implements Parcelable
      */
     public static class BigTextStyle extends Style {
         private CharSequence mBigText;
+        
+
 
         public BigTextStyle() {
         }
@@ -1863,11 +1898,9 @@ public class Notification implements Parcelable
                 // vertical centering
                 contentView.setViewPadding(R.id.line1, 0, 0, 0, 0);
             }
-
             contentView.setTextViewText(R.id.big_text, mBigText);
             contentView.setViewVisibility(R.id.big_text, View.VISIBLE);
             contentView.setViewVisibility(R.id.text2, View.GONE);
-
             return contentView;
         }
 
@@ -1941,7 +1974,6 @@ public class Notification implements Parcelable
 
             int[] rowIds = {R.id.inbox_text0, R.id.inbox_text1, R.id.inbox_text2, R.id.inbox_text3,
                     R.id.inbox_text4, R.id.inbox_text5, R.id.inbox_text6};
-
             // Make sure all rows are gone in case we reuse a view.
             for (int rowId : rowIds) {
                 contentView.setViewVisibility(rowId, View.GONE);

@@ -3691,6 +3691,12 @@
   <java-symbol type="string" name="quiet_time" />
   <java-symbol type="drawable" name="junk_quiettime_on_no" />
   <java-symbol type="drawable" name="junk_quiettime_on_yes" />
+
+  <!-- Frameworks -->
+  <java-symbol type="drawable" name="notification_bg_junk" />
+
+
+ 
   
 
 </resources>

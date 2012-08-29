@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -606,6 +607,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         applyLegacyRowBackground(sbn, content);
 
+        
         row.setTag(R.id.expandable_tag, Boolean.valueOf(large != null));
         entry.row = row;
         entry.content = content;
