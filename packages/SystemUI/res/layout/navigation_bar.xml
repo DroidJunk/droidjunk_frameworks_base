@@ -121,10 +121,11 @@
             android:visibility="gone"
             >
             <ImageView
+                android:id="@+id/lights_out_image1"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="40dp"
-                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:background="@drawable/ic_sysbar_lights_out_dot_small"
                 android:scaleType="center"
                 android:layout_weight="0"
                 />
@@ -135,9 +136,10 @@
                 android:visibility="invisible"
                 />
             <ImageView
+                android:id="@+id/lights_out_image2"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_sysbar_lights_out_dot_large"
+                android:background="@drawable/ic_sysbar_lights_out_dot_large"
                 android:scaleType="center"
                 android:layout_weight="0"
                 />
@@ -148,10 +150,11 @@
                 android:visibility="invisible"
                 />
             <ImageView
+                android:id="@+id/lights_out_image3"
                 android:layout_width="80dp"
                 android:layout_marginRight="40dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:background="@drawable/ic_sysbar_lights_out_dot_small"
                 android:scaleType="center"
                 android:layout_weight="0"
                 />
@@ -266,10 +269,11 @@
             android:visibility="gone"
             >
             <ImageView
+                android:id="@+id/lights_out_image1"
                 android:layout_height="80dp"
                 android:layout_marginTop="40dp"
                 android:layout_width="match_parent"
-                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:background="@drawable/ic_sysbar_lights_out_dot_small"
                 android:scaleType="center"
                 android:layout_weight="0"
                 />
@@ -280,9 +284,10 @@
                 android:visibility="invisible"
                 />
             <ImageView
+                android:id="@+id/lights_out_image2"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
-                android:src="@drawable/ic_sysbar_lights_out_dot_large"
+                android:background="@drawable/ic_sysbar_lights_out_dot_large"
                 android:scaleType="center"
                 android:layout_weight="0"
                 />
@@ -293,10 +298,11 @@
                 android:visibility="invisible"
                 />
             <ImageView
+                android:id="@+id/lights_out_image3"
                 android:layout_height="80dp"
                 android:layout_marginBottom="40dp"
                 android:layout_width="match_parent"
-                android:src="@drawable/ic_sysbar_lights_out_dot_small"
+                android:background="@drawable/ic_sysbar_lights_out_dot_small"
                 android:scaleType="center"
                 android:layout_weight="0"
                 />

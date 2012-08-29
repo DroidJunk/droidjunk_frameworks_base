@@ -65,6 +65,7 @@ public class NavigationBarView extends LinearLayout {
 	private final String Junk_NavBar_Settings = "JUNK_NAVBAR_SETTINGS";
 	private SharedPreferences sp;
 	private final String NAV_BAR_COLOR = "nav_bar_color";
+    private final String NAV_BAR_LIGHTSOUT_COLOR = "nav_lightsout_color";
 	private final String SHOW_LEFT_MENU_BUTTON = "left_menu_button";
 	private final String SHOW_RIGHT_MENU_BUTTON = "right_menu_button";
 	private final String SHOW_TOP_MENU_BUTTON_LAND = "top_menu_button_land";
@@ -97,13 +98,12 @@ public class NavigationBarView extends LinearLayout {
     private DelegateViewHelper mDelegateHelper;
 
     // Junk
-    private float scale = 0; 
     private int mBarColor = 0xff000000;
+    private int mLightsoutColor = 0x80ffffff;
     private boolean mShowLeftMenuButton = true;
     private boolean mShowRightMenuButton = true;
     private boolean mShowTopMenuButtonLand = true;
     private boolean mShowBotMenuButtonLand = true;
-    private int mHorizAdjust = 0;
     // End Junk    
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
@@ -226,6 +226,7 @@ public class NavigationBarView extends LinearLayout {
             String action = intent.getAction();
             if (action.equals(Junk_NavBar_Settings)) {
             	mBarColor = intent.getIntExtra(NAV_BAR_COLOR, mBarColor);
+            	mLightsoutColor = intent.getIntExtra(NAV_BAR_LIGHTSOUT_COLOR, mLightsoutColor);
        	   		mShowLeftMenuButton = intent.getBooleanExtra(SHOW_LEFT_MENU_BUTTON, mShowLeftMenuButton);
        	   		mShowRightMenuButton = intent.getBooleanExtra(SHOW_RIGHT_MENU_BUTTON, mShowRightMenuButton);
        	   		mShowTopMenuButtonLand = intent.getBooleanExtra(SHOW_TOP_MENU_BUTTON_LAND, mShowTopMenuButtonLand);
@@ -351,6 +352,12 @@ public class NavigationBarView extends LinearLayout {
 
         final View navButtons = mCurrentView.findViewById(R.id.nav_buttons);
         final View lowLights = mCurrentView.findViewById(R.id.lights_out);
+        final View lowLightsImage1 = mCurrentView.findViewById(R.id.lights_out_image1);
+        final View lowLightsImage2 = mCurrentView.findViewById(R.id.lights_out_image2);
+        final View lowLightsImage3 = mCurrentView.findViewById(R.id.lights_out_image3);
+        lowLightsImage1.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mLightsoutColor, .4f, 0f));
+        lowLightsImage2.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mLightsoutColor, .4f, 0f));
+        lowLightsImage3.getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mLightsoutColor, .4f, 0f));
 
         // ok, everyone, stop it right there
         navButtons.animate().cancel();
