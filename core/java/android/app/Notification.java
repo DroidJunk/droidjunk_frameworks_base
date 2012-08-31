@@ -16,7 +16,8 @@
 
 package android.app;
 
-import com.android.internal.R;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +25,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff.Mode;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,8 +37,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RemoteViews;
 
-import java.text.NumberFormat;
-import java.util.ArrayList;
+import com.android.internal.R;
 
 /**
  * A class that represents how a persistent notification is to be presented to
@@ -58,12 +57,18 @@ public class Notification implements Parcelable
 {
 	
 	private final String PD_NOTIF_ICON_BG_COLOR = "pd_notif_icon_bg_color";
-	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
 	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
+	private final String PD_NOTIF_TITLE_COLOR = "pd_notif_title_color";
+	private final String PD_NOTIF_TIME_COLOR = "pd_notif_time_color";
+	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
+
 	SharedPreferences sp;
-	private int icon_bg_color = 0xff0e303d;
+	private int icon_bg_color = 0xee111111;
+	private int text_bg_color = 0xee111111;
+	private int title_color = 0xffffffff;
+	private int time_color = 0xffffffff;
 	private int text_color = 0xfff6f6f6;
-	private int text_bg_color = 0xff0e303d;
+	
 	
     /**
      * Use all default values (where applicable).
@@ -817,9 +822,11 @@ public class Notification implements Parcelable
   		}
 
         sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
-        text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6);
+        icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d);  
         text_bg_color = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, 0xff0e303d);
-        icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d);    	
+        title_color = sp.getInt(PD_NOTIF_TITLE_COLOR, 0xfff6f6f6);
+        time_color = sp.getInt(PD_NOTIF_TIME_COLOR, 0xfff6f6f6);
+        text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6);
         
         RemoteViews contentView = new RemoteViews(context.getPackageName(),
                 R.layout.notification_template_base);
@@ -842,7 +849,7 @@ public class Notification implements Parcelable
         		text_bg_color);
         if (contentTitle != null) {
             contentView.setTextViewText(R.id.title, contentTitle);
-            contentView.setTextColor(R.id.title, text_color);
+            contentView.setTextColor(R.id.title, title_color);
         }
         if (contentText != null) {
             contentView.setTextViewText(R.id.text, contentText);
@@ -851,11 +858,12 @@ public class Notification implements Parcelable
         if (this.when != 0) {
             contentView.setViewVisibility(R.id.time, View.VISIBLE);
             contentView.setLong(R.id.time, "setTime", when);
-            contentView.setTextColor(R.id.time, text_color);
+            contentView.setTextColor(R.id.time, time_color);
         }
         if (this.number != 0) {
             NumberFormat f = NumberFormat.getIntegerInstance();
             contentView.setTextViewText(R.id.info, f.format(this.number));
+            contentView.setTextColor(R.id.info, text_color);
         }
 
 
@@ -949,12 +957,24 @@ public class Notification implements Parcelable
         private Context mContext;
         
     	private final String PD_NOTIF_ICON_BG_COLOR = "pd_notif_icon_bg_color";
-    	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
     	private final String PD_NOTIF_TEXT_BG_COLOR = "pd_notif_text_bg_color";
-    	SharedPreferences sp;
-    	private int icon_bg_color = 0xff0e303d;
+    	private final String PD_NOTIF_TITLE_COLOR = "pd_notif_title_color";
+    	private final String PD_NOTIF_TIME_COLOR = "pd_notif_time_color";
+    	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
+    	private final String PD_NOTIF_DIVIDER_COLOR = "pd_notif_divider_color";
+    	private final String PD_NOTIF_SUBTEXT_COLOR = "pd_notif_subtext_color";
+    	private final String PD_NOTIF_SMALL_ICON_COLOR = "pd_notif_small_icon_color";
+    	
+    	private int icon_bg_color = 0xee111111;
+    	private int text_bg_color = 0xee111111;
+    	private int title_color = 0xffffffff;
+    	private int time_color = 0xffffffff;
     	public static int text_color = 0xfff6f6f6;
-    	private int text_bg_color = 0xff0e303d;
+    	private int divider_color = 0xfff6f6f6;
+    	public static int subtext_color = 0xffffffff;
+    	private int small_icon_color = 0xffffffff;
+
+    	SharedPreferences sp;
 
         private long mWhen;
         private int mSmallIcon;
@@ -1437,10 +1457,14 @@ public class Notification implements Parcelable
       		}
 
             sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
-            text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6);
-            text_bg_color = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, 0xff0e303d);
-            icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d);
-              
+            text_bg_color = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, text_bg_color);
+            icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, icon_bg_color);
+            title_color = sp.getInt(PD_NOTIF_TITLE_COLOR, title_color);
+            time_color = sp.getInt(PD_NOTIF_TIME_COLOR, time_color);
+            text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, text_color);
+            divider_color = sp.getInt(PD_NOTIF_DIVIDER_COLOR, divider_color);
+            subtext_color = sp.getInt(PD_NOTIF_SUBTEXT_COLOR, subtext_color);
+            small_icon_color = sp.getInt(PD_NOTIF_SMALL_ICON_COLOR, small_icon_color);
             
             if (mLargeIcon != null) {
                 contentView.setImageViewBitmap(R.id.icon, mLargeIcon);
@@ -1461,12 +1485,13 @@ public class Notification implements Parcelable
             if (mSmallIcon != 0) {
                 contentView.setImageViewResource(smallIconImageViewId, mSmallIcon);
                 contentView.setViewVisibility(smallIconImageViewId, View.VISIBLE);
+                contentView.setDrawableColorMatrix(smallIconImageViewId, false, small_icon_color);
             } else {
                 contentView.setViewVisibility(smallIconImageViewId, View.GONE);
             }
             if (mContentTitle != null) {
                 contentView.setTextViewText(R.id.title, mContentTitle);
-                contentView.setTextColor(R.id.title, text_color);
+                contentView.setTextColor(R.id.title, title_color);
             }
             if (mContentText != null) {
                 contentView.setTextViewText(R.id.text, mContentText);
@@ -1498,7 +1523,7 @@ public class Notification implements Parcelable
             // Need to show three lines?
             if (mSubText != null) {
                 contentView.setTextViewText(R.id.text, mSubText);
-                contentView.setTextColor(R.id.text, text_color);
+                contentView.setTextColor(R.id.text, subtext_color);
                 if (mContentText != null) {
                     contentView.setTextViewText(R.id.text2, mContentText);
                     contentView.setViewVisibility(R.id.text2, View.VISIBLE);
@@ -1539,7 +1564,7 @@ public class Notification implements Parcelable
                 } else {
                     contentView.setViewVisibility(R.id.time, View.VISIBLE);
                     contentView.setLong(R.id.time, "setTime", mWhen);
-                    contentView.setTextColor(R.id.time, text_color);
+                    contentView.setTextColor(R.id.time, time_color);
                 }
             }
             contentView.setViewVisibility(R.id.line3, showLine3 ? View.VISIBLE : View.GONE);
@@ -1601,7 +1626,6 @@ public class Notification implements Parcelable
                               : R.layout.notification_action);
             button.setTextViewCompoundDrawables(R.id.action0, action.icon, 0, 0, 0);
             button.setTextViewText(R.id.action0, action.title);
-            button.setTextColor(R.id.time, text_color);
             if (!tombstone) {
                 button.setOnClickPendingIntent(R.id.action0, action.actionIntent);
             }
@@ -1634,6 +1658,7 @@ public class Notification implements Parcelable
             n.defaults = mDefaults;
             n.flags = mFlags;
             n.bigContentView = makeBigContentView();
+            
             // Junk if (mLedOnMs != 0 && mLedOffMs != 0) { <<<< Can't make solid led without off = 0
             if (mLedOnMs != 0) {
                 n.flags |= FLAG_SHOW_LIGHTS;
@@ -1743,6 +1768,7 @@ public class Notification implements Parcelable
                                     : mBuilder.mSubText;
             if (overflowText != null) {
                 contentView.setTextViewText(R.id.text, overflowText);
+                contentView.setTextColor(R.id.text, Builder.subtext_color);
                 contentView.setViewVisibility(R.id.overflow_divider, View.VISIBLE);
                 contentView.setViewVisibility(R.id.line3, View.VISIBLE);
             } else {
@@ -1900,6 +1926,7 @@ public class Notification implements Parcelable
             }
             contentView.setTextViewText(R.id.big_text, mBigText);
             contentView.setViewVisibility(R.id.big_text, View.VISIBLE);
+            contentView.setTextColor(R.id.big_text, Builder.text_color);
             contentView.setViewVisibility(R.id.text2, View.GONE);
             return contentView;
         }
@@ -1985,6 +2012,7 @@ public class Notification implements Parcelable
                 if (str != null && !str.equals("")) {
                     contentView.setViewVisibility(rowIds[i], View.VISIBLE);
                     contentView.setTextViewText(rowIds[i], str);
+                    contentView.setTextColor(rowIds[i], Builder.text_color);
                 }
                 i++;
             }
@@ -2005,5 +2033,10 @@ public class Notification implements Parcelable
             wip.bigContentView = makeBigContentView();
             return wip;
         }
+        
+        
+        
+        
+        
     }
 }
