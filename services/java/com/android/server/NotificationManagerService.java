@@ -174,11 +174,11 @@ public class NotificationManagerService extends INotificationManager.Stub
 	private final String DEFAULT_LED_OFF_MS = "default_led_off_ms";
 	private final String PULSE_LED_SCREEN_ON = "pulse_led_screen_on";
 	private boolean mUseLed = true;
-	private boolean mPulseFlashLed = false;
+	private boolean mPulseFlashLed = true;
 	private boolean mDefaultLedColorOn = true;
-    private int mDefNotifColor = 0xffffffff;
-    private int mDefNotifLedOn = 10;
-    private int mDefNotifLedOff = 10;
+    private int mDefNotifColor = 0xff3F9BBF;
+    private int mDefNotifLedOn = 5;
+    private int mDefNotifLedOff = 5;
     private boolean mUseLedScreenOn = false;
     
     private SharedPreferences sp;
@@ -1378,8 +1378,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             if ((mLedNotification.notification.defaults & Notification.DEFAULT_LIGHTS) != 0) {
            		if (mDefaultLedColorOn) {
            			ledARGB = mDefNotifColor;
-           			ledOnMS = mDefNotifLedOn * 50;
-           			ledOffMS = mDefNotifLedOff * 50;
+           			ledOnMS = mDefNotifLedOn * 40;
+           			ledOffMS = mDefNotifLedOff * 40;
            			Log.e("    JUNK DEF:",String.valueOf(ledARGB));
            			Log.e("    JUNK DEF:",String.valueOf(ledOnMS));
            			Log.e("    JUNK DEF:",String.valueOf(ledOffMS));

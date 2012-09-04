@@ -96,6 +96,7 @@ public class BatteryController extends LinearLayout {
 
     
     private int mBatteryIconNum = 0;
+    private String mBatteryIconString = "0";
     private boolean mBarBottom = false;
     private boolean mBarRight = false;
     private boolean mShowCircle = false;
@@ -154,8 +155,9 @@ public class BatteryController extends LinearLayout {
 			e.printStackTrace();
 		}
 		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
-		mBatteryIconNum = mPrefs.getInt(BATTERY_ICONS, mBatteryIconNum);
-   		mBatteryLevelsOne = mPrefs.getInt(BATTERY_LEVEL_ONE, mBatteryLevelsOne);
+		mBatteryIconNum = Integer.valueOf(mPrefs.getString(BATTERY_ICONS, "0"));
+		mBatteryIconString = mPrefs.getString(BATTERY_ICONS, "0");   		
+		mBatteryLevelsOne = mPrefs.getInt(BATTERY_LEVEL_ONE, mBatteryLevelsOne);
    		mBatteryLevelsColorOne = mPrefs.getInt(BATTERY_LEVEL_COLOR_ONE, mBatteryLevelsColorOne);
    		mBatteryLevelsTwo = mPrefs.getInt(BATTERY_LEVEL_TWO, mBatteryLevelsTwo);
    		mBatteryLevelsColorTwo = mPrefs.getInt(BATTERY_LEVEL_COLOR_TWO, mBatteryLevelsColorTwo);
@@ -219,8 +221,13 @@ public class BatteryController extends LinearLayout {
             }
   
             if (action.equals(Junk_Battery_Settings)) {
- 
-            	mBatteryIconNum = intent.getIntExtra(BATTERY_ICONS, mBatteryIconNum);
+
+            	String tempString = intent.getStringExtra(BATTERY_ICONS);
+            	if (tempString != null){
+        			mBatteryIconString = tempString;
+        			mBatteryIconNum = Integer.valueOf(mBatteryIconString);
+        		}
+
            		mShowCircle = intent.getBooleanExtra(BATTERY_SHOW_CIRCLE, mShowCircle);
            		mShowSquare = intent.getBooleanExtra(BATTERY_SHOW_SQUARE, mShowSquare);
            		mCircleColorOne = intent.getIntExtra(BATTERY_CIRCLE_COLOR_ONE, mCircleColorOne);

@@ -63,8 +63,8 @@ public class Notification implements Parcelable
 	private final String PD_NOTIF_TEXT_COLOR = "pd_notif_text_color";
 
 	SharedPreferences sp;
-	private int icon_bg_color = 0xee111111;
-	private int text_bg_color = 0xee111111;
+	private int icon_bg_color = 0xff111111;
+	private int text_bg_color = 0xff111111;
 	private int title_color = 0xffffffff;
 	private int time_color = 0xffffffff;
 	private int text_color = 0xfff6f6f6;
@@ -822,11 +822,11 @@ public class Notification implements Parcelable
   		}
 
         sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
-        icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, 0xff0e303d);  
-        text_bg_color = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, 0xff0e303d);
-        title_color = sp.getInt(PD_NOTIF_TITLE_COLOR, 0xfff6f6f6);
-        time_color = sp.getInt(PD_NOTIF_TIME_COLOR, 0xfff6f6f6);
-        text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, 0xfff6f6f6);
+        icon_bg_color = sp.getInt(PD_NOTIF_ICON_BG_COLOR, icon_bg_color);  
+        text_bg_color = sp.getInt(PD_NOTIF_TEXT_BG_COLOR, text_bg_color);
+        title_color = sp.getInt(PD_NOTIF_TITLE_COLOR, title_color);
+        time_color = sp.getInt(PD_NOTIF_TIME_COLOR, time_color);
+        text_color = sp.getInt(PD_NOTIF_TEXT_COLOR, text_color);
         
         RemoteViews contentView = new RemoteViews(context.getPackageName(),
                 R.layout.notification_template_base);
@@ -965,8 +965,8 @@ public class Notification implements Parcelable
     	private final String PD_NOTIF_SUBTEXT_COLOR = "pd_notif_subtext_color";
     	private final String PD_NOTIF_SMALL_ICON_COLOR = "pd_notif_small_icon_color";
     	
-    	private int icon_bg_color = 0xee111111;
-    	private int text_bg_color = 0xee111111;
+    	private int icon_bg_color = 0xff111111;
+    	private int text_bg_color = 0xff111111;
     	private int title_color = 0xffffffff;
     	private int time_color = 0xffffffff;
     	public static int text_color = 0xfff6f6f6;

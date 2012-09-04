@@ -55,7 +55,6 @@
 			android:layout_gravity="right"
 			android:visibility="gone" />
 		
-		
 		<ImageView
 			android:id="@+id/battery_horiz_bar_bottom_off"
 			android:layout_below="@id/battery"
@@ -69,7 +68,6 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:visibility="gone" />
-		
 		
 		<ImageView
 			android:id="@+id/battery_vert_bar_off"

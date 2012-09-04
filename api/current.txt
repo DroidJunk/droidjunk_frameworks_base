@@ -3811,6 +3811,8 @@ package android.app {
     method public android.app.Notification.Builder setUsesChronometer(boolean);
     method public android.app.Notification.Builder setVibrate(long[]);
     method public android.app.Notification.Builder setWhen(long);
+    field public static int subtext_color;
+    field public static int text_color;
   }
 
   public static class Notification.InboxStyle extends android.app.Notification.Style {

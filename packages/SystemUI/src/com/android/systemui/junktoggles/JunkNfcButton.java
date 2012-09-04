@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -58,7 +59,9 @@ public class JunkNfcButton extends JunkToggleButton {
         //mNFCAdapter = NfcAdapter.getDefaultAdapter(getContext());
         
         NfcManager manager = (NfcManager) getContext().getSystemService(Context.NFC_SERVICE);
+        
         mNFCAdapter = manager.getDefaultAdapter();
+        
         
 		showNfc = (View) getRootView().findViewById(R.id.button_nfc);
 		mIndicator = (View) getRootView().findViewById(R.id.indicator_nfc);
@@ -78,9 +81,15 @@ public class JunkNfcButton extends JunkToggleButton {
 
 	@Override
 	protected boolean getStatusOn(){
-		//mNFCAdapter = NfcAdapter.getDefaultAdapter(getContext());
-		return (mNFCAdapter.isEnabled());
 
+  		boolean enabled = false;
+		try {
+  			enabled = mNFCAdapter.isEnabled();
+  		} catch (NullPointerException e) {
+  			e.printStackTrace();
+  		}
+		return enabled;
+		
 	}
 
 	@Override
@@ -88,8 +97,15 @@ public class JunkNfcButton extends JunkToggleButton {
 		
 		mIcon.clearColorFilter();
 		
+  		boolean enabled = false;
+		try {
+  			enabled = mNFCAdapter.isEnabled();
+  		} catch (NullPointerException e) {
+  			e.printStackTrace();
+  		}
 		
-		if (mNFCAdapter.isEnabled()) {
+		
+		if (enabled) {
 				mIndicator.setBackgroundColor(JunkToggles.mToggleIndOnColor);
 				mIcon.setImageResource(R.drawable.junktoggle_nfc_on);
 				mIcon.setColorFilter(JunkToggleButton.mToggleIconOnColor);

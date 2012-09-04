@@ -33,7 +33,7 @@ public class JunkToggles extends LinearLayout {
 	private SharedPreferences mPrefs;
 	public static boolean mTogglesOn = true;
 	public static boolean mTogglesTop = true;
-	public static int mToggleColor = 0xff141414;
+	public static int mToggleColor = 0xff111111;
     public static boolean mShowToggleInd = true;
     public static int mToggleIndOnColor = 0xffffffff;
     public static int mToggleIndOffColor = 0xff555555;
@@ -41,7 +41,7 @@ public class JunkToggles extends LinearLayout {
     public static int mToggleTextOnColor = 0xffffffff;
     public static int mToggleTextOffColor = 0xff555555;   
     public static boolean mShowToggleDiv = true;
-    public static int mToggleDivColor = 0xff2c2c2c;   
+    public static int mToggleDivColor = 0xff131313;   
     public JunkToggles(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}

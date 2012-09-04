@@ -54,7 +54,7 @@ public class JunkQuietTimeService {
     private final String Junk_QuietTime_Settings_Sat = "JUNK_QUIET_TIME_SETTINGS_sat";
     private final String Junk_QuietTime_Settings_Changed = "JUNK_QUIET_TIME_SETTINGS_CHANGED";
 	private final String QUIET_TIME = "quiet_time_on";
-	private final String QUIET_TIME_NOTIF = "quiet_time_notif_on";
+	private final String QUIET_TIME_NOTIF = "quiet_time_notif";
 	private final String START_HOUR = "qt_start_hour";
 	private final String START_MIN = "qt_start_min";
 	private final String STOP_HOUR = "qt_stop_hour";
@@ -491,7 +491,6 @@ public class JunkQuietTimeService {
 
     
     private void setupNotification(boolean isOn) {
-    	
    		if (isOn) {
        		if (withinQuietTime) {
            		if (mUseNotif) {

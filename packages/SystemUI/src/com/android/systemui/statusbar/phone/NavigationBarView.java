@@ -99,7 +99,7 @@ public class NavigationBarView extends LinearLayout {
 
     // Junk
     private int mBarColor = 0xff000000;
-    private int mLightsoutColor = 0x80ffffff;
+    private int mLightsoutColor = 0x70ffffff;
     private boolean mShowLeftMenuButton = true;
     private boolean mShowRightMenuButton = true;
     private boolean mShowTopMenuButtonLand = true;
@@ -208,10 +208,10 @@ public class NavigationBarView extends LinearLayout {
         
 		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
 		mBarColor = sp.getInt(NAV_BAR_COLOR, mBarColor); 
-        mShowLeftMenuButton = sp.getBoolean(SHOW_LEFT_MENU_BUTTON, true);
-        mShowRightMenuButton = sp.getBoolean(SHOW_RIGHT_MENU_BUTTON, true);
-        mShowTopMenuButtonLand = sp.getBoolean(SHOW_TOP_MENU_BUTTON_LAND, true);
-        mShowBotMenuButtonLand = sp.getBoolean(SHOW_BOT_MENU_BUTTON_LAND, true);
+        mShowLeftMenuButton = sp.getBoolean(SHOW_LEFT_MENU_BUTTON, mShowLeftMenuButton);
+        mShowRightMenuButton = sp.getBoolean(SHOW_RIGHT_MENU_BUTTON, mShowRightMenuButton);
+        mShowTopMenuButtonLand = sp.getBoolean(SHOW_TOP_MENU_BUTTON_LAND, mShowTopMenuButtonLand);
+        mShowBotMenuButtonLand = sp.getBoolean(SHOW_BOT_MENU_BUTTON_LAND, mShowBotMenuButtonLand);
         getBackground().setColorFilter(ColorFilterMaker.changeColorAlpha(mBarColor, .45f, .0f));
         
         IntentFilter filter = new IntentFilter();
