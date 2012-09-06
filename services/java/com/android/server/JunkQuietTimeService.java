@@ -308,6 +308,9 @@ public class JunkQuietTimeService {
     private void getQuietTimeSettings(){
         mQTOnOff = sp.getBoolean(QUIET_TIME, mQTOnOff);
         mUseNotif = sp.getBoolean(QUIET_TIME_NOTIF, mUseNotif);
+        Log.e("*****************************","*************************");
+        Log.e("**********************",String.valueOf(mQTOnOff));
+        Log.e("*****************************","*************************");
        
         dailyQuietTime = sp.getBoolean(QUIET_TIME + QT_DAILY, dailyQuietTime);
         dailyStartHour = sp.getInt(START_HOUR + QT_DAILY, dailyStartHour);
