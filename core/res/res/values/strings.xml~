@@ -4112,27 +4112,4 @@
     <!-- Message informing user that the requested activity could not be found [CHAR LIMIT=none] -->
     <string name="app_not_found">No application found to handle this action</string>
     <string name="revoke">Revoke</string>
-
-
-
-
-
-
-
-     <!-- ColorPicker -->     
-    <string name="dialog_color_picker">Color Picker</string>
-    <string name="press_color_to_apply">Press on Color to apply</string>  
-    <string name="hex">Hex:</string>
-    <string name="hex_hint">#FF000000</string>
-    <string name="ics_color">Stock</string>
-    <string name="arrow_right">→</string> 
-    <string name="arrow_down">↓</string>
-    <string name="set">"Set"</string>   
-
-
-
-
-
-
-
 </resources>
