@@ -2422,6 +2422,17 @@
         <service android:name="android.hardware.location.GeofenceHardwareService"
             android:permission="android.permission.LOCATION_HARDWARE"
             android:exported="false" />
-    </application>
+    
+    
+    	<!-- ===============================================================
+     	JUNK
+     	=============================================================== -->          
+        
+        <service android:name="com.android.server.JunkQuietTimeService"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:exported="true" />
+        
+        
+        </application>
 
 </manifest>

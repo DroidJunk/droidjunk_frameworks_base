@@ -2059,12 +2059,19 @@
      =============================================================== -->
   <eat-comment />
 
+  <!-- DJSeekBarPreference -->
   <java-symbol type="layout" name="preference_widget_dj_seekbar" />
   <java-symbol type="id" name="min_value" />
   <java-symbol type="id" name="current_value" />
   <java-symbol type="id" name="max_value" />
-  <java-symbol type="id" name="djseekbar" /> 
-
+  <java-symbol type="id" name="djseekbar" />
+  
+  <!-- Reboot Menu -->
+  <java-symbol type="array" name="reboot_options" />
+  <java-symbol type="array" name="reboot_values" />
+  <java-symbol type="drawable" name="ic_lock_reboot" />
+  <java-symbol type="string" name="reboot" />
+  <java-symbol type="string" name="reboot_progress" />
 
   <!-- ColorPicker -->
   <java-symbol type="layout" name="dialog_color_picker" />
@@ -2075,6 +2082,11 @@
   <java-symbol type="id" name="enter" />
   <java-symbol type="id" name="ics_color" />
   <java-symbol type="string" name="dialog_color_picker" />
+
+  <!-- QuietTime -->
+  <java-symbol type="string" name="quiet_time" />
+  <java-symbol type="drawable" name="junk_quiettime_on_no" />
+  <java-symbol type="drawable" name="junk_quiettime_on_yes" />
 
 
 

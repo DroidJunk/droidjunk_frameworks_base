@@ -4119,15 +4119,28 @@
 
 
 
+	<!-- ===============================================================
+     	JUNK
+     =============================================================== -->      
+     
+     <!-- Reboot Menu -->
+     <string name="reboot">Reboot</string>
+     <string name="reboot_recovery">Recovery</string>
+     <string name="reboot_bootloader">Bootloader</string>
+     <string name="reboot_progress">Device is rebooting...</string>
+     
      <!-- ColorPicker -->     
     <string name="dialog_color_picker">Color Picker</string>
     <string name="press_color_to_apply">Press on Color to apply</string>  
     <string name="hex">Hex:</string>
     <string name="hex_hint">#FF000000</string>
-    <string name="ics_color">Stock</string>
+	<string name="ics_color">Junk</string>
     <string name="arrow_right">→</string> 
     <string name="arrow_down">↓</string>
-    <string name="set">"Set"</string>   
+    <string name="set">"Set"</string>     
+
+     <!-- QuietTime -->  
+    <string name="quiet_time">"Quiet Time"</string>
 
 
 
