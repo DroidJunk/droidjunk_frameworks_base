@@ -2252,8 +2252,8 @@ public class NotificationManagerService extends INotificationManager.Stub
            			ledOffMS = mDefNotifLedOff * 10;
            		} else {
            			ledARGB = mDefaultNotificationColor;
-           			ledOnMS = mDefaultNotificationLedOn;
-           			ledOffMS = mDefaultNotificationLedOff;
+           			ledOnMS = mDefaultNotificationLedOn * 10;
+           			ledOffMS = mDefaultNotificationLedOff * 10;
            		}
             
             }// End Junk                
