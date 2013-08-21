@@ -453,7 +453,10 @@ public class StatusBarManagerService extends IStatusBarService.Stub
         enforceStatusBarService();
 
         // tell the notification manager to turn off the lights.
-        mNotificationCallbacks.onPanelRevealed();
+        
+        // JUNK
+        //mNotificationCallbacks.onPanelRevealed();
+        // END JUNK
     }
 
     public void onNotificationClick(String pkg, String tag, int id) {
