@@ -587,7 +587,27 @@ class QuickSettings {
             parent.addView(bluetoothTile);
         }
 
-    }
+        // JUNK
+        // Gps Mode
+        final QuickSettingsBasicTile gpsTile
+                = new QuickSettingsBasicTile(mContext);
+        mModel.addGpsModeTile(gpsTile, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView unused, State state) {
+                gpsTile.setImageResource(state.iconId);
+
+                String gpsState = mContext.getString(
+                        (state.enabled) ? R.string.accessibility_desc_on
+                                : R.string.accessibility_desc_off);
+                gpsTile.setContentDescription(
+                        mContext.getString(R.string.accessibility_quick_settings_airplane, gpsState));
+                gpsTile.setText(state.label);
+            }
+        });
+        parent.addView(gpsTile);
+        
+        
+    	} // END JUNK
 
     private void addTemporaryTiles(final ViewGroup parent, final LayoutInflater inflater) {
         // Alarm tile

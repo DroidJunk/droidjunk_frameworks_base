@@ -28,6 +28,7 @@ import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.WifiDisplayStatus;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.UserHandle;
@@ -89,6 +90,11 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         boolean connected = false;
         String stateContentDescription;
     }
+    // JUNK
+    static class GpsState extends State {
+        String signalContentDescription;
+        boolean connected;
+    }// END JUNK
 
     /** The callback to update a given tile. */
     interface RefreshCallback {
@@ -190,6 +196,33 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     }
 
+    
+    // JUNK
+	// Gps settings observer
+	private class GpsObserver extends ContentObserver{
+		public GpsObserver(Handler handler) {
+			super(handler);
+		}
+
+		@Override
+	    public void onChange(boolean selfChange){
+			ContentResolver contentResolver = mContext.getContentResolver();
+		    boolean gpsStatus = Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER);
+			onGpsModeChanged(gpsStatus);
+	    }
+        public void startObserving() {
+            final ContentResolver cr = mContext.getContentResolver();
+            cr.unregisterContentObserver(this);
+           cr.registerContentObserver(
+                    Settings.Secure.getUriFor(Settings.Secure.LOCATION_PROVIDERS_ALLOWED), true,
+                    this, mUserTracker.getCurrentUserId());
+        }
+
+	}
+	private final GpsObserver mGpsObserver;
+    // END JUNK
+    
+   
     private final Context mContext;
     private final Handler mHandler;
     private final CurrentUserTracker mUserTracker;
@@ -259,6 +292,12 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mSettingsCallback;
     private State mSettingsState = new State();
 
+    // JUNK
+    private QuickSettingsTileView mGpsModeTile;
+    private RefreshCallback mGpsModeCallback;
+    private GpsState mGpsModeState = new GpsState();
+    // END JUNK
+    
     public QuickSettingsModel(Context context) {
         mContext = context;
         mHandler = new Handler();
@@ -278,7 +317,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mBugreportObserver.startObserving();
         mBrightnessObserver = new BrightnessObserver(mHandler);
         mBrightnessObserver.startObserving();
-
+        mGpsObserver = new GpsObserver(mHandler);
+        mGpsObserver.startObserving();
+               
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         mHasMobileData = cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE);
@@ -527,6 +568,55 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             onBluetoothStateChange(mBluetoothState.enabled);
         }
     }
+    
+    
+    // JUNK
+    // Gps
+    void addGpsModeTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mGpsModeTile = view;
+        mGpsModeTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mGpsModeState.enabled) {
+                    setGpsModeState(false);
+                } else {
+                    setGpsModeState(true);
+                }
+            }
+        });
+        mGpsModeCallback = cb;
+        boolean gpsMode = Settings.Secure.isLocationProviderEnabled(mContext.getContentResolver(), LocationManager.GPS_PROVIDER);
+        onGpsModeChanged(gpsMode != false);
+    }
+    private void setGpsModeState(boolean enabled) {
+        // TODO: Sets the view to be "awaiting" if not already awaiting
+
+        // Change the system setting
+    	Settings.Secure.setLocationProviderEnabled((mContext.getContentResolver()),"gps" ,enabled);
+    }
+
+    public void onGpsModeChanged(boolean enabled) {
+        // TODO: If view is in awaiting state, disable
+        Resources r = mContext.getResources();
+        mGpsModeState.enabled = enabled;
+        mGpsModeState.iconId = (enabled ?
+                R.drawable.ic_qs_gps_on :
+                R.drawable.ic_qs_gps_off);
+        mGpsModeState.label =(enabled ? 
+        		r.getString(R.string.quick_settings_gps_on_label):
+        		r.getString(R.string.quick_settings_gps_off_label));
+        mGpsModeCallback.refreshView(mGpsModeTile, mGpsModeState);
+    }    
+    
+    
+    
+    
+    
+    
+  
+    // END JUNK
+    
+    
 
     // Battery
     void addBatteryTile(QuickSettingsTileView view, RefreshCallback cb) {
