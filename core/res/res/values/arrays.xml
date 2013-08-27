@@ -422,20 +422,19 @@
 <!-- ===============================================================
      	JUNK
      =============================================================== -->    
-    
-    
-    <!-- reboot options -->
-    <string-array name="reboot_options">
-    <item>@string/reboot</item>
-    <item>@string/reboot_recovery</item>
-    <item>@string/reboot_bootloader</item>
-    </string-array>
+  
+     <!-- Reboot Options -->
+    <array name="shutdown_reboot_options" translatable="false">
+        <item>@string/reboot_reboot</item>
+        <item>@string/reboot_recovery</item>
+        <item>@string/reboot_bootloader</item>
+    </array>
 
-    <!-- reboot values -->
-    <string-array name="reboot_values">
-    <item></item>
-    <item>recovery</item>
-    <item>bootloader</item>
-    </string-array>    
+    <!-- Reboot Actions -->
+    <string-array name="shutdown_reboot_actions" translatable="false">
+        <item></item>
+        <item>recovery</item>
+        <item>bootloader</item>
+    </string-array>   
 
 </resources>

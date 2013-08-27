@@ -4123,11 +4123,15 @@
      	JUNK
      =============================================================== -->      
      
-     <!-- Reboot Menu -->
-     <string name="reboot">Reboot</string>
-     <string name="reboot_recovery">Recovery</string>
-     <string name="reboot_bootloader">Bootloader</string>
-     <string name="reboot_progress">Device is rebooting...</string>
+     <!-- Reboot Items -->
+ 
+    <string name="global_actions_reboot">Reboot</string>
+    <string name="reboot_reboot">Reboot</string>
+    <string name="reboot_recovery">Recovery</string>
+    <string name="reboot_bootloader">Bootloader</string>
+    <string name="reboot_progress">Rebooting\u2026</string>
+    <string name="reboot_system">Your phone will reboot</string>
+    <string name="reboot_confirm">Your phone will reboot.</string>
      
      <!-- ColorPicker -->     
     <string name="dialog_color_picker">Color Picker</string>
