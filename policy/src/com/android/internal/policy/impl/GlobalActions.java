@@ -260,46 +260,17 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
             });
 
-        // next: airplane mode
-        mItems.add(mAirplaneModeOn);
-
-        // next: bug report, if enabled
-        if (Settings.Global.getInt(mContext.getContentResolver(),
-                Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0) {
-            mItems.add(
-                new SinglePressAction(com.android.internal.R.drawable.stat_sys_adb,
-                        R.string.global_action_bug_report) {
-
+        // next: reboot
+       
+           mItems.add(
+                new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_actions_reboot) {
                     public void onPress() {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                        builder.setTitle(com.android.internal.R.string.bugreport_title);
-                        builder.setMessage(com.android.internal.R.string.bugreport_message);
-                        builder.setNegativeButton(com.android.internal.R.string.cancel, null);
-                        builder.setPositiveButton(com.android.internal.R.string.report,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Add a little delay before executing, to give the
-                                        // dialog a chance to go away before it takes a
-                                        // screenshot.
-                                        mHandler.postDelayed(new Runnable() {
-                                            @Override public void run() {
-                                                try {
-                                                    ActivityManagerNative.getDefault()
-                                                            .requestBugReport();
-                                                } catch (RemoteException e) {
-                                                }
-                                            }
-                                        }, 500);
-                                    }
-                                });
-                        AlertDialog dialog = builder.create();
-                        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
-                        dialog.show();
+                        mWindowManagerFuncs.reboot();
                     }
 
                     public boolean onLongPress() {
-                        return false;
+                        mWindowManagerFuncs.rebootSafeMode(true);
+                        return true;
                     }
 
                     public boolean showDuringKeyguard() {
@@ -307,10 +278,17 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     }
 
                     public boolean showBeforeProvisioning() {
-                        return false;
+                        return true;
                     }
                 });
-        }
+     
+
+
+
+         // next: airplane mode
+        mItems.add(mAirplaneModeOn);
+
+
 
         // last: silent mode
         if (mShowSilentToggle) {

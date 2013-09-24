@@ -153,6 +153,9 @@ class ServerThread extends Thread {
         CommonTimeManagementService commonTimeMgmtService = null;
         InputManagerService inputManager = null;
         TelephonyRegistry telephonyRegistry = null;
+        // Junk
+        JunkQuietTimeService junkQuietTimeService = null;
+        // End Junk
 
         // Create a shared handler thread for UI within the system server.
         // This thread is used by at least the following components:
@@ -749,6 +752,15 @@ class ServerThread extends Thread {
             } catch (Throwable e) {
                 reportWtf("starting IdleMaintenanceService", e);
             }
+
+            // Junk
+            try {
+                Slog.i(TAG, "JunkQuietTimeService");
+                junkQuietTimeService = new JunkQuietTimeService(context);
+            } catch (Throwable e) {
+                reportWtf("starting JunkQuietTimeService service", e);
+            }
+            // End Junk
         }
 
         // Before things start rolling, be sure we have decided whether
@@ -857,6 +869,9 @@ class ServerThread extends Thread {
         final DreamManagerService dreamyF = dreamy;
         final InputManagerService inputManagerF = inputManager;
         final TelephonyRegistry telephonyRegistryF = telephonyRegistry;
+        // Junk
+        final JunkQuietTimeService junkQuietTimeServiceF = junkQuietTimeService;
+        // End Junk
 
         // We now tell the activity manager it is okay to run third party
         // code.  It will call back into us once it has gotten to the state
@@ -928,6 +943,16 @@ class ServerThread extends Thread {
                 } catch (Throwable e) {
                     reportWtf("making Recognition Service ready", e);
                 }
+
+                // Junk
+                try {
+                    if (junkQuietTimeServiceF != null) junkQuietTimeServiceF.systemReady();
+                } catch (Throwable e) {
+                    reportWtf("making Quiet Time Service ready", e);
+                }
+                // End Junk
+
+
                 Watchdog.getInstance().start();
 
                 // It is now okay to let the various system services start their

@@ -114,8 +114,15 @@ public class NotificationPanelView extends PanelView {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     mOkToFlip = getExpandedHeight() == 0;
+                    
+                    if (event.getX(0) > getWidth() * (1.0f - 0.20f)) {
+                    	mOkToFlip = true;
+                    	mStatusBar.switchToSettings();
+                    	}
                     break;
+
                 case MotionEvent.ACTION_POINTER_DOWN:
+                	mOkToFlip = false;
                     if (mOkToFlip) {
                         float miny = event.getY(0);
                         float maxy = miny;
@@ -134,6 +141,12 @@ public class NotificationPanelView extends PanelView {
                         }
                     }
                     break;
+                    
+                    
+
+                    
+                    
+                    
             }
         }
         return mHandleView.dispatchTouchEvent(event);
