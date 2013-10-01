@@ -20,6 +20,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -34,6 +36,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Slog;
 import android.view.View;
 import android.widget.TextView;
@@ -61,8 +64,23 @@ public class Clock extends TextView {
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
 
-    private static final int AM_PM_STYLE = AM_PM_STYLE_GONE;
+    private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
 
+    // Junk
+	private final String Junk_Clock_Settings = "JUNK_CLOCK_SETTINGS";
+	private final String SHOW_CLOCK = "show_clock";
+	private final String CLOCK_AMPM = "clock_ampm";
+	private final String CLOCK_COLOR = "clock_color";
+	private final String CLOCK_SIZE = "clock_size";
+	private SharedPreferences mPrefs;
+    private boolean mShowClock = true;
+    private boolean mClockAmPm = false;
+    private int mClockColor = 0xff3F9BBF;
+    private int mClockSize = 17;    
+    // End Junk
+    
+    
+    
     public Clock(Context context) {
         this(context, null);
     }
@@ -88,10 +106,30 @@ public class Clock extends TextView {
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
             filter.addAction(Intent.ACTION_USER_SWITCHED);
+            // Junk
+            filter.addAction(Junk_Clock_Settings);
+            //End Junk
 
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
 
+        // Junk
+ 		Context settingsContext = getContext();
+		try {
+			settingsContext = getContext().createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 		
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+ 		mShowClock = mPrefs.getBoolean(SHOW_CLOCK, mShowClock);
+ 		mClockAmPm = mPrefs.getBoolean(CLOCK_AMPM, mClockAmPm);
+		mClockColor = mPrefs.getInt(CLOCK_COLOR, mClockColor);
+		mClockSize = mPrefs.getInt(CLOCK_SIZE, mClockSize);
+		// End Junk
+        
+        
         // NOTE: It's safe to do these after registering the receiver since the receiver always runs
         // in the main thread, therefore the receiver can't run before this method returns.
 
@@ -99,7 +137,14 @@ public class Clock extends TextView {
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
         // Make sure we update to the current time
+        if (mShowClock) {
+        	setVisibility(VISIBLE);
+        } else {
+        	setVisibility(GONE);
+        }
+        // End Junk
         updateClock();
+        
     }
 
     @Override
@@ -127,12 +172,37 @@ public class Clock extends TextView {
                     mLocale = newLocale;
                     mClockFormatString = ""; // force refresh
                 }
+            }             
+            // Junk
+            if (action.equals(Junk_Clock_Settings)) {
+             	mShowClock = intent.getBooleanExtra(SHOW_CLOCK, mShowClock);
+            	mClockAmPm = intent.getBooleanExtra(CLOCK_AMPM, mClockAmPm);
+  	   			mClockColor = intent.getIntExtra(CLOCK_COLOR, mClockColor);	
+            	mClockSize = intent.getIntExtra(CLOCK_SIZE, mClockSize);
+
+            	if (mShowClock) {
+                	setVisibility(VISIBLE);
+                } else {
+                	setVisibility(GONE);
+                }
+
             }
+            // End Junk
             updateClock();
         }
     };
 
     final void updateClock() {
+    	// Junk
+        if (mClockAmPm) {
+        	AM_PM_STYLE = AM_PM_STYLE_SMALL;
+        } else {
+        	AM_PM_STYLE = AM_PM_STYLE_GONE;
+        }
+        setTextColor(mClockColor);
+        setTextSize(mClockSize);
+    	// End Junk
+
         mCalendar.setTimeInMillis(System.currentTimeMillis());
         setText(getSmallTime());
     }
