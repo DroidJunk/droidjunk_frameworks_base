@@ -1244,8 +1244,6 @@ public class NotificationManagerService extends INotificationManager.Stub
             } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
                 // reload per-user settings
                 mSettingsObserver.update(null);
-            
-            // JUNK
 	    }  else if (action.equals(Junk_QuietTime_Settings_Changed)) {
             	inQuietTime = intent.getBooleanExtra("QuietTimeOn", inQuietTime);
             	mTurnOffLed = intent.getBooleanExtra("QuietTimeLedOn", mTurnOffLed);
@@ -1391,7 +1389,7 @@ public class NotificationManagerService extends INotificationManager.Stub
   		// Junk
         Context settingsContext = mContext;
 		try {
-			settingsContext = mContext.createPackageContext("com.junk.settings",0);
+			settingsContext = mContext.createPackageContext("com.android.settings",0);
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2269,7 +2267,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             if (mNotificationPulseEnabled) {
                 // pulse repeatedly
                 mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
-                        ledOnMS  * 100, ledOffMS  * 100);
+                        ledOnMS, ledOffMS);
             }
             // Junk
             if (inQuietTime && mTurnOffLed){

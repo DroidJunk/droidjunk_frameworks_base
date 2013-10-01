@@ -114,13 +114,14 @@ public class JunkQuietTimeService {
     	
   		Context settingsContext = myContext;
 		try {
-			settingsContext = myContext.createPackageContext("com.junk.settings",0);
+			settingsContext = myContext.createPackageContext("com.android.settings",0);
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_WORLD_READABLE);
+		
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
     	
     	IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_TIME_TICK);
@@ -138,7 +139,7 @@ public class JunkQuietTimeService {
         nManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
    	 	notification = new Notification();
         Intent notificationIntent = new Intent();
-   	 	notificationIntent.setAction("android.settings.CUSTOM_QUIETTIME_SETTINGS");
+   	 	notificationIntent.setAction("android.settings.junk.CUSTOM_QUIETTIME_SETTINGS");
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
    	 	contentIntent = PendingIntent.getActivity(myContext, (int)
    	 			System.currentTimeMillis(), notificationIntent, 
