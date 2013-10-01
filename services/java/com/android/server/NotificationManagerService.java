@@ -2267,7 +2267,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             if (mNotificationPulseEnabled) {
                 // pulse repeatedly
                 mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
-                        ledOnMS, ledOffMS);
+                        ledOnMS / 3, ledOffMS / 3);
             }
             // Junk
             if (inQuietTime && mTurnOffLed){
