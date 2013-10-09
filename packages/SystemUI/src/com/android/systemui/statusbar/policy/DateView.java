@@ -20,7 +20,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.TextView;
@@ -40,6 +43,17 @@ public class DateView extends TextView {
     private boolean mWindowVisible;
     private boolean mUpdating;
 
+    // JUNK
+    private final String Junk_Pulldown_Settings = "JUNK_PULLDOWN_SETTINGS";
+	private final String HEADER_DATE_SHOW = "header_date_show";
+	private final String HEADER_DATE_SIZE = "header_date_size";
+	private final String HEADER_DATE_COLOR = "header_date_color";
+    private boolean mShowDate = true;
+    private int mDateColor = 0xff3F9BBF;
+    private int mDateSize = 17;    
+    private SharedPreferences mPrefs;
+	// END JUNK
+	
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -53,6 +67,29 @@ public class DateView extends TextView {
         }
     };
 
+    private BroadcastReceiver mJunkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            // Junk
+            if (action.equals(Junk_Pulldown_Settings)) {
+             	mShowDate = intent.getBooleanExtra(HEADER_DATE_SHOW, mShowDate);
+  	   			mDateColor = intent.getIntExtra(HEADER_DATE_COLOR, mDateColor);	
+            	mDateSize = intent.getIntExtra(HEADER_DATE_SIZE, mDateSize);
+            	Log.e("******************************** ",String.valueOf(mDateColor));
+            	if (mShowDate) {
+                	setVisibility(VISIBLE);
+                } else {
+                	setVisibility(GONE);
+                }
+            	updateClock();
+
+            }
+            // End Junk
+        }
+    };    
+    
+    
     public DateView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -61,7 +98,26 @@ public class DateView extends TextView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mAttachedToWindow = true;
-        setUpdates();
+        
+       
+        // Junk
+ 		Context settingsContext = getContext();
+		try {
+			settingsContext = getContext().createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mPrefs = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);
+ 		mShowDate = mPrefs.getBoolean(HEADER_DATE_SHOW, mShowDate);
+		mDateColor = mPrefs.getInt(HEADER_DATE_COLOR, mDateColor);
+		mDateSize = mPrefs.getInt(HEADER_DATE_SIZE, mDateSize);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Junk_Pulldown_Settings);
+		mContext.registerReceiver(mJunkReceiver, filter, null, null);
+		// End Junk
+		
+		setUpdates();
     }
     
     @Override
@@ -96,6 +152,10 @@ public class DateView extends TextView {
         String fmt = ICU.getBestDateTimePattern(dateFormat, l.toString());
         SimpleDateFormat sdf = new SimpleDateFormat(fmt, l);
         setText(sdf.format(new Date()));
+        // JUNK
+        setTextColor(mDateColor);
+        setTextSize(mDateSize);
+        // END JUNK
     }
 
     private boolean isVisible() {

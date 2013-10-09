@@ -34,14 +34,14 @@
          <EriInfo RoamingIndicator="64"
                   IconIndex="1"
                   IconMode="0"
-                  EriText="T-CDMA 64"
+                  EriText="Verizon"
                   CallPromptId="0"
                   AlertId="0"/>
 
          <EriInfo RoamingIndicator="65"
                   IconIndex="65"
                   IconMode="0"
-                  EriText="T-CDMA 65"
+                  EriText="Verizon"
                   CallPromptId="0"
                   AlertId="0"/>
 

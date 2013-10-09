@@ -19,7 +19,6 @@ package com.android.server;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.END_TAG;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
-
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.AppGlobals;
@@ -37,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -198,6 +198,32 @@ public class NotificationManagerService extends INotificationManager.Stub
     private static final String TAG_BLOCKED_PKGS = "blocked-packages";
     private static final String TAG_PACKAGE = "package";
     private static final String ATTR_NAME = "name";
+
+
+
+    // Junk
+    private final String Junk_QuietTime_Settings_Changed = "JUNK_QUIET_TIME_SETTINGS_CHANGED";
+    private boolean inQuietTime = false;
+    private boolean mTurnOffLed = false;
+    private boolean mTurnOffVibrate = false;
+    private boolean mTurnOffSound = false;
+	
+    private boolean mDefaultLedColorOn;
+    private final String Junk_Led_Settings = "JUNK_LED_SETTINGS";
+    private final String DEFAULT_LED_COLOR_ON = "default_led_color_on";	
+    private final String DEFAULT_LED_COLOR = "default_led_color";	
+    private final String DEFAULT_LED_ON_MS = "default_led_on_ms";
+    private final String DEFAULT_LED_OFF_MS = "default_led_off_ms";
+    private final String PULSE_LED_SCREEN_ON = "pulse_led_screen_on";    
+    private int mDefNotifColor;
+    private int mDefNotifLedOn;
+    private int mDefNotifLedOff;
+    private boolean mUseLedScreenOn = false;
+    
+    private SharedPreferences sp;
+    // End Junk    
+
+
 
     private class NotificationListenerInfo implements DeathRecipient {
         INotificationListener listener;
@@ -1210,12 +1236,26 @@ public class NotificationManagerService extends INotificationManager.Stub
                     cancelAllNotificationsInt(null, 0, 0, true, userHandle);
                 }
             } else if (action.equals(Intent.ACTION_USER_PRESENT)) {
+		// JUNK
+		if (!mUseLedScreenOn) mNotificationLight.turnOff();
                 // turn off LED when user passes through lock screen
-                mNotificationLight.turnOff();
+		//mNotificationLight.turnOff();
+		// END JUNK
             } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
                 // reload per-user settings
                 mSettingsObserver.update(null);
-            }
+	    }  else if (action.equals(Junk_QuietTime_Settings_Changed)) {
+            	inQuietTime = intent.getBooleanExtra("QuietTimeOn", inQuietTime);
+            	mTurnOffLed = intent.getBooleanExtra("QuietTimeLedOn", mTurnOffLed);
+            	mTurnOffSound = intent.getBooleanExtra("QuietTimeSoundOn", mTurnOffSound);
+            	mTurnOffVibrate = intent.getBooleanExtra("QuietTimeVibrateOn", mTurnOffVibrate);
+            }  else if (action.equals(Junk_Led_Settings)) {
+            	mDefaultLedColorOn = intent.getBooleanExtra(DEFAULT_LED_COLOR_ON, mDefaultLedColorOn);
+            	mDefNotifColor = intent.getIntExtra(DEFAULT_LED_COLOR, mDefNotifColor);
+            	mDefNotifLedOn = intent.getIntExtra(DEFAULT_LED_ON_MS, mDefNotifLedOn);
+            	mDefNotifLedOff = intent.getIntExtra(DEFAULT_LED_OFF_MS, mDefNotifLedOff);
+            	mUseLedScreenOn = intent.getBooleanExtra(PULSE_LED_SCREEN_ON, mUseLedScreenOn);
+            } // END JUNK
         }
     };
 
@@ -1330,6 +1370,10 @@ public class NotificationManagerService extends INotificationManager.Stub
         filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(Intent.ACTION_USER_STOPPED);
         filter.addAction(Intent.ACTION_USER_SWITCHED);
+        // Junk
+        filter.addAction(Junk_QuietTime_Settings_Changed);
+        filter.addAction(Junk_Led_Settings);
+        // End Junk
         mContext.registerReceiver(mIntentReceiver, filter);
         IntentFilter pkgFilter = new IntentFilter();
         pkgFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -1342,6 +1386,25 @@ public class NotificationManagerService extends INotificationManager.Stub
         IntentFilter sdFilter = new IntentFilter(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
         mContext.registerReceiver(mIntentReceiver, sdFilter);
 
+  		// Junk
+        Context settingsContext = mContext;
+		try {
+			settingsContext = mContext.createPackageContext("com.android.settings",0);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		sp = settingsContext.getSharedPreferences("Junk_Settings", Context.MODE_PRIVATE);     
+		
+    	mDefaultLedColorOn = sp.getBoolean(DEFAULT_LED_COLOR_ON, mDefaultLedColorOn);
+    	mDefNotifColor = sp.getInt(DEFAULT_LED_COLOR, mDefNotifColor);
+    	mDefNotifLedOn = sp.getInt(DEFAULT_LED_ON_MS, mDefNotifLedOn);
+    	mDefNotifLedOff = sp.getInt(DEFAULT_LED_OFF_MS, mDefNotifLedOff);
+    	mUseLedScreenOn = sp.getBoolean(PULSE_LED_SCREEN_ON, mUseLedScreenOn);
+        // End Junk        
+        
+        
         mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
     }
@@ -1656,11 +1719,13 @@ public class NotificationManagerService extends INotificationManager.Stub
         // 0. Sanitize inputs
         notification.priority = clamp(notification.priority, Notification.PRIORITY_MIN, Notification.PRIORITY_MAX);
         // Migrate notification flags to scores
-        if (0 != (notification.flags & Notification.FLAG_HIGH_PRIORITY)) {
+        if (0 != (notification.flags & Notification.PRIORITY_HIGH)) {
             if (notification.priority < Notification.PRIORITY_MAX) notification.priority = Notification.PRIORITY_MAX;
-        } else if (SCORE_ONGOING_HIGHER && 0 != (notification.flags & Notification.FLAG_ONGOING_EVENT)) {
-            if (notification.priority < Notification.PRIORITY_HIGH) notification.priority = Notification.PRIORITY_HIGH;
-        }
+        } else if (SCORE_ONGOING_HIGHER) {
+			if (0 != (notification.flags & Notification.FLAG_ONGOING_EVENT)) {
+			    if (notification.priority < Notification.PRIORITY_HIGH) notification.priority = Notification.PRIORITY_HIGH;
+			}
+		}
 
         // 1. initial score: buckets of 10, around the app 
         int score = notification.priority * NOTIFICATION_PRIORITY_MULTIPLIER; //[-20..20]
@@ -1681,10 +1746,10 @@ public class NotificationManagerService extends INotificationManager.Stub
             Slog.v(TAG, "Assigned score=" + score + " to " + notification);
         }
 
-        if (score < SCORE_DISPLAY_THRESHOLD) {
-            // Notification will be blocked because the score is too low.
-            return;
-        }
+//        if (score < SCORE_DISPLAY_THRESHOLD) {
+//            // Notification will be blocked because the score is too low.
+//            return;
+//        }
 
         // Should this notification make noise, vibe, or use the LED?
         final boolean canInterrupt = (score >= SCORE_INTERRUPTION_THRESHOLD);
@@ -1816,6 +1881,11 @@ public class NotificationManagerService extends INotificationManager.Stub
                     mSoundNotification = r;
                     // do not play notifications if stream volume is 0
                     // (typically because ringer mode is silent) or if speech recognition is active.
+                    // Junk
+                    if (inQuietTime && mTurnOffSound) {
+                    	//No sound
+                    } else {  
+                    // End Junk
                     if ((audioManager.getStreamVolume(audioStreamType) != 0)
                             && !audioManager.isSpeechRecognitionActive()) {
                         final long identity = Binder.clearCallingIdentity();
@@ -1829,9 +1899,16 @@ public class NotificationManagerService extends INotificationManager.Stub
                             Binder.restoreCallingIdentity(identity);
                         }
                     }
+                    }
                 }
 
                 // vibrate
+                // Junk
+                if (inQuietTime && mTurnOffVibrate) {
+                	// No vibrate
+                } else {  
+                // End Junk
+                	
                 // Does the notification want to specify its own vibration?
                 final boolean hasCustomVibrate = notification.vibrate != null;
 
@@ -1867,6 +1944,7 @@ public class NotificationManagerService extends INotificationManager.Stub
                         mVibrator.vibrate(r.sbn.getUid(), r.sbn.getBasePkg(), notification.vibrate,
                             ((notification.flags & Notification.FLAG_INSISTENT) != 0) ? 0: -1);
                     }
+                }
                 }
             }
 
@@ -2152,26 +2230,51 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mLedNotification = mLights.get(n-1);
             }
         }
-
+        // Junk
+        if (mUseLedScreenOn) mScreenOn = false;
+        // End Junk
+        
+                
         // Don't flash while we are in a call or screen is on
-        if (mLedNotification == null || mInCall || mScreenOn) {
+        // Removing mInCall allows the missed call led to work
+        // if (mLedNotification == null || mInCall || mScreenOn) {
+        if (mLedNotification == null || mScreenOn) {
             mNotificationLight.turnOff();
-        } else {
+            // JUNK
+            return;
+            // END JUNK
+        }            
+        
             final Notification ledno = mLedNotification.sbn.getNotification();
             int ledARGB = ledno.ledARGB;
             int ledOnMS = ledno.ledOnMS;
             int ledOffMS = ledno.ledOffMS;
             if ((ledno.defaults & Notification.DEFAULT_LIGHTS) != 0) {
-                ledARGB = mDefaultNotificationColor;
-                ledOnMS = mDefaultNotificationLedOn;
-                ledOffMS = mDefaultNotificationLedOff;
-            }
+
+            	// Junk
+           		if (mDefaultLedColorOn) {
+           			ledARGB = mDefNotifColor;
+           			ledOnMS = mDefNotifLedOn;
+           			ledOffMS = mDefNotifLedOff;
+           		} else {
+           			ledARGB = mDefaultNotificationColor;
+           			ledOnMS = mDefaultNotificationLedOn;
+           			ledOffMS = mDefaultNotificationLedOff;
+           		}
+            
+            }// End Junk                
+            
             if (mNotificationPulseEnabled) {
                 // pulse repeatedly
                 mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
-                        ledOnMS, ledOffMS);
+                        ledOnMS * 33, ledOffMS * 33);
             }
-        }
+            // Junk
+            if (inQuietTime && mTurnOffLed){
+            	mNotificationLight.turnOff();
+            }
+            // End Junk
+        
     }
 
     // lock on mNotificationList

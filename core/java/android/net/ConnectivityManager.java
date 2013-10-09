@@ -1396,4 +1396,5 @@ public class ConnectivityManager {
         } catch (RemoteException e) {
         }
     }
+
 }

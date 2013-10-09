@@ -17740,6 +17740,19 @@ package android.preference {
     ctor public CheckBoxPreference(android.content.Context);
   }
 
+  public class ColorPickerPreference extends android.preference.Preference implements android.view.ColorPickerDialog.OnColorChangedListener android.preference.Preference.OnPreferenceClickListener {
+    ctor public ColorPickerPreference(android.content.Context);
+    ctor public ColorPickerPreference(android.content.Context, android.util.AttributeSet);
+    ctor public ColorPickerPreference(android.content.Context, android.util.AttributeSet, int);
+    method public static java.lang.String convertToARGB(int);
+    method public static int convertToColorInt(java.lang.String) throws java.lang.NumberFormatException;
+    method public int getValue();
+    method public void onColorChanged(int);
+    method public boolean onPreferenceClick(android.preference.Preference);
+    method public void setAlphaSliderEnabled(boolean);
+    method protected void showDialog(android.os.Bundle);
+  }
+
   public abstract class DialogPreference extends android.preference.Preference implements android.content.DialogInterface.OnClickListener android.content.DialogInterface.OnDismissListener android.preference.PreferenceManager.OnActivityDestroyListener {
     ctor public DialogPreference(android.content.Context, android.util.AttributeSet, int);
     ctor public DialogPreference(android.content.Context, android.util.AttributeSet);
@@ -24687,6 +24700,14 @@ package android.view {
     method public abstract void onActionProviderVisibilityChanged(boolean);
   }
 
+  public class AlphaPatternDrawable extends android.graphics.drawable.Drawable {
+    ctor public AlphaPatternDrawable(int);
+    method public void draw(android.graphics.Canvas);
+    method public int getOpacity();
+    method public void setAlpha(int);
+    method public void setColorFilter(android.graphics.ColorFilter);
+  }
+
   public final class Choreographer {
     method public static android.view.Choreographer getInstance();
     method public void postFrameCallback(android.view.Choreographer.FrameCallback);
@@ -24701,6 +24722,52 @@ package android.view {
   public abstract interface CollapsibleActionView {
     method public abstract void onActionViewCollapsed();
     method public abstract void onActionViewExpanded();
+  }
+
+  public class ColorPickerDialog extends android.app.Dialog implements android.view.ColorPickerView.OnColorChangedListener android.view.View.OnClickListener {
+    ctor public ColorPickerDialog(android.content.Context, int);
+    method public int getColor();
+    method public void onClick(android.view.View);
+    method public void onColorChanged(int);
+    method public void setAlphaSliderVisible(boolean);
+    method public void setOnColorChangedListener(android.view.ColorPickerDialog.OnColorChangedListener);
+  }
+
+  public static abstract interface ColorPickerDialog.OnColorChangedListener {
+    method public abstract void onColorChanged(int);
+  }
+
+  public class ColorPickerPanelView extends android.view.View {
+    ctor public ColorPickerPanelView(android.content.Context);
+    ctor public ColorPickerPanelView(android.content.Context, android.util.AttributeSet);
+    ctor public ColorPickerPanelView(android.content.Context, android.util.AttributeSet, int);
+    method public int getBorderColor();
+    method public int getColor();
+    method public void setBorderColor(int);
+    method public void setColor(int);
+  }
+
+  public class ColorPickerView extends android.view.View {
+    ctor public ColorPickerView(android.content.Context);
+    ctor public ColorPickerView(android.content.Context, android.util.AttributeSet);
+    ctor public ColorPickerView(android.content.Context, android.util.AttributeSet, int);
+    method public java.lang.String getAlphaSliderText();
+    method public int getBorderColor();
+    method public int getColor();
+    method public float getDrawingOffset();
+    method public int getSliderTrackerColor();
+    method public void setAlphaSliderText(int);
+    method public void setAlphaSliderText(java.lang.String);
+    method public void setAlphaSliderVisible(boolean);
+    method public void setBorderColor(int);
+    method public void setColor(int);
+    method public void setColor(int, boolean);
+    method public void setOnColorChangedListener(android.view.ColorPickerView.OnColorChangedListener);
+    method public void setSliderTrackerColor(int);
+  }
+
+  public static abstract interface ColorPickerView.OnColorChangedListener {
+    method public abstract void onColorChanged(int);
   }
 
   public abstract interface ContextMenu implements android.view.Menu {

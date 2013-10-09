@@ -2053,4 +2053,47 @@
   <public type="style" name="Theme.DeviceDefault.NoActionBar.Overscan" id="0x010301df" />
   <public type="style" name="Theme.DeviceDefault.Light.NoActionBar.Overscan" id="0x010301e0" />
 
+
+<!-- ===============================================================
+     Resources added for JUNK
+     =============================================================== -->
+  <eat-comment />
+
+  <!-- DJSeekBarPreference -->
+  <java-symbol type="layout" name="preference_widget_dj_seekbar" />
+  <java-symbol type="id" name="min_value" />
+  <java-symbol type="id" name="current_value" />
+  <java-symbol type="id" name="max_value" />
+  <java-symbol type="id" name="djseekbar" />
+  
+  <!-- Reboot Menu -->
+  <java-symbol type="string" name="global_actions_reboot" />
+  <java-symbol type="drawable" name="ic_lock_reboot" />
+  <java-symbol type="string" name="reboot_reboot" />
+  <java-symbol type="string" name="reboot_recovery" />
+  <java-symbol type="string" name="reboot_bootloader" />
+  <java-symbol type="string" name="reboot_progress" />
+  <java-symbol type="string" name="reboot_system" />
+  <java-symbol type="string" name="reboot_confirm" />
+  <java-symbol type="array" name="shutdown_reboot_options" />
+  <java-symbol type="array" name="shutdown_reboot_actions" />
+  
+  
+  <!-- ColorPicker -->
+  <java-symbol type="layout" name="dialog_color_picker" />
+  <java-symbol type="id" name="color_picker_view" />
+  <java-symbol type="id" name="old_color_panel" />
+  <java-symbol type="id" name="new_color_panel" />
+  <java-symbol type="id" name="hex" />
+  <java-symbol type="id" name="enter" />
+  <java-symbol type="id" name="ics_color" />
+  <java-symbol type="string" name="dialog_color_picker" />
+
+  <!-- QuietTime -->
+  <java-symbol type="string" name="quiet_time" />
+  <java-symbol type="drawable" name="junk_quiettime_on_no" />
+  <java-symbol type="drawable" name="junk_quiettime_on_yes" />
+
+
+
 </resources>
